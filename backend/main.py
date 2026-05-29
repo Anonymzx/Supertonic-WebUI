@@ -1,11 +1,10 @@
 """
 Supertonic TTS WebUI - Main FastAPI Application
-REST API for text-to-speech generation with Supertonic 3.
+REST API for text-to-speech generation using official Supertonic 3 SDK.
 """
 import io
 import json
 import time
-import asyncio
 import logging
 from typing import Optional
 from contextlib import asynccontextmanager
@@ -21,7 +20,6 @@ from fastapi.staticfiles import StaticFiles
 from config import (
     HOST, PORT, BACKEND_URL, FRONTEND_URL,
     SAMPLE_RATE, AUDIO_EXTENSION, OUTPUTS_DIR,
-    SUPERTONIC_MODEL_NAME, SUPERTONIC_MODEL_URL,
     AVAILABLE_VOICES, logger,
 )
 from models import (
@@ -50,12 +48,18 @@ async def lifespan(app: FastAPI):
     logger.info(f"GPU available: {tts_engine.provider_info.get('gpu_available', False)}")
     logger.info(f"GPU name: {tts_engine.provider_info.get('gpu_name', 'N/A')}")
 
-    # Try to load model automatically
-    model_loaded = tts_engine.load_model()
-    if model_loaded:
-        logger.info("✓ Model loaded successfully")
-    else:
-        logger.warning("⚠ Model not loaded. Use /api/download-model endpoint.")
+    # Try to load model automatically using official SDK (auto_download=True)
+    logger.info("Attempting to load Supertonic 3 model (official SDK with auto-download)...")
+    try:
+        model_loaded = tts_engine.load_model()
+        if model_loaded:
+            logger.info("✓ Model loaded successfully via official SDK")
+        else:
+            err = tts_engine._load_error or "Unknown error"
+            logger.warning(f"⚠ Model could not be loaded: {err}")
+            logger.warning("  The SDK will auto-download on first successful load.")
+    except Exception as e:
+        logger.error(f"⚠ Unexpected error during model loading: {e}")
 
     # Show available endpoints
     logger.info(f"API: http://{HOST}:{PORT}/api")
@@ -71,7 +75,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app
 app = FastAPI(
     title="Supertonic TTS WebUI",
-    description="Local AI Text-to-Speech powered by Supertonic 3",
+    description="Local AI Text-to-Speech powered by Supertonic 3 (official SDK)",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -98,23 +102,25 @@ app.add_middleware(
 @app.post("/api/tts", response_model=TTSResponse)
 async def text_to_speech(request: TTSRequest):
     """
-    Generate speech from text using the Supertonic 3 model.
-
-    Returns audio file URL and generation metadata.
+    Generate speech from text using the official Supertonic 3 SDK.
+    Auto-downloads model via HuggingFace cache if not present.
     """
     try:
-        # Validate text is not empty after preprocessing
         text = request.text.strip()
         if not text:
             raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-        # Check model loaded
+        # Try to load model if not loaded (auto-download)
         if not tts_engine.model_loaded:
-            raise HTTPException(
-                status_code=503,
-                detail="Model not loaded. Use /api/download-model first, "
-                       "or place model file in outputs/models/",
-            )
+            logger.info("Model not loaded. Attempting SDK load with auto_download...")
+            success = tts_engine.load_model()
+            if not success:
+                err = tts_engine._load_error or "Unknown error"
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"Model could not be loaded: {err}. "
+                           f"Ensure supertonic SDK is installed: pip install supertonic",
+                )
 
         # Generate audio
         audio, metadata = tts_engine.generate(
@@ -126,7 +132,7 @@ async def text_to_speech(request: TTSRequest):
         )
 
         # Save output file
-        output_id = f"{int(time.time())}_{hash(text) % 10000:04d}"
+        output_id = f"{int(time.time())}_{abs(hash(text)) % 10000:04d}"
         output_filename = f"{output_id}{AUDIO_EXTENSION}"
         output_path = OUTPUTS_DIR / output_filename
 
@@ -174,22 +180,20 @@ async def text_to_speech(request: TTSRequest):
 
 @app.post("/api/tts/stream")
 async def text_to_speech_stream(request: TTSRequest):
-    """
-    Generate speech with streaming audio response.
-    Returns audio data as it's generated.
-    """
+    """Generate speech with streaming audio response."""
     try:
         if not tts_engine.model_loaded:
-            raise HTTPException(
-                status_code=503,
-                detail="Model not loaded. Use /api/download-model first.",
-            )
+            success = tts_engine.load_model()
+            if not success:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"Model not loaded: {tts_engine._load_error}",
+                )
 
         text = request.text.strip()
         if not text:
             raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-        # Generate audio first (synchronous inference)
         audio, metadata = tts_engine.generate(
             text=text,
             voice=request.voice,
@@ -199,13 +203,9 @@ async def text_to_speech_stream(request: TTSRequest):
         )
 
         async def generate_stream():
-            """Generator for streaming audio response."""
-            # Convert to WAV bytes
             buffer = io.BytesIO()
             sf.write(buffer, audio, SAMPLE_RATE, format="WAV")
             buffer.seek(0)
-
-            # Stream in chunks
             chunk_size = 4096
             while True:
                 chunk = buffer.read(chunk_size)
@@ -232,24 +232,21 @@ async def text_to_speech_stream(request: TTSRequest):
 
 @app.post("/api/tts/batch")
 async def batch_text_to_speech(request: BatchTTSRequest):
-    """
-    Generate speech for multiple texts in batch.
-    Returns list of audio URLs and metadata.
-    """
+    """Generate speech for multiple texts in batch."""
     try:
         if not tts_engine.model_loaded:
-            raise HTTPException(
-                status_code=503,
-                detail="Model not loaded. Use /api/download-model first.",
-            )
+            success = tts_engine.load_model()
+            if not success:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"Model not loaded: {tts_engine._load_error}",
+                )
 
         results = []
         for i, text in enumerate(request.texts):
             text = text.strip()
             if not text:
                 continue
-
-            # Generate audio
             audio, metadata = tts_engine.generate(
                 text=text,
                 voice=request.voice,
@@ -257,8 +254,6 @@ async def batch_text_to_speech(request: BatchTTSRequest):
                 quality_steps=request.quality_steps,
                 language=request.language,
             )
-
-            # Save output
             output_id = f"batch_{i}_{int(time.time())}"
             output_filename = f"{output_id}{AUDIO_EXTENSION}"
             output_path = OUTPUTS_DIR / output_filename
@@ -266,7 +261,6 @@ async def batch_text_to_speech(request: BatchTTSRequest):
 
             audio_url = f"/audio/{output_filename}"
 
-            # Add to history
             history_id = history_manager.add_item(
                 text=text,
                 voice=request.voice,
@@ -320,7 +314,6 @@ async def get_voices():
 
 @app.get("/api/voices/{voice_id}", response_model=VoiceInfo)
 async def get_voice(voice_id: str):
-    """Get information for a specific voice."""
     voice = voice_manager.get_voice(voice_id)
     if not voice:
         raise HTTPException(status_code=404, detail=f"Voice '{voice_id}' not found")
@@ -329,7 +322,6 @@ async def get_voice(voice_id: str):
 
 @app.get("/api/voices/groups/grouped")
 async def get_voice_groups():
-    """Get voices grouped by gender."""
     return voice_manager.get_voice_groups()
 
 
@@ -341,13 +333,11 @@ async def get_history(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
 ):
-    """Get paginated generation history."""
     return history_manager.get_items(page=page, per_page=per_page)
 
 
 @app.delete("/api/history/{item_id}")
 async def delete_history_item(item_id: str):
-    """Delete a specific history item."""
     deleted = history_manager.delete_item(item_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="History item not found")
@@ -356,37 +346,45 @@ async def delete_history_item(item_id: str):
 
 @app.delete("/api/history")
 async def clear_history():
-    """Clear all history items."""
     count = history_manager.clear_all()
     return {"message": f"Cleared {count} items"}
 
 
 @app.get("/api/history/stats")
 async def get_history_stats():
-    """Get generation statistics."""
     return history_manager.get_stats()
 
 
 # ─── System Endpoints ───────────────────────────────────────────────────
 
 
-@app.get("/api/system/info", response_model=SystemInfo)
+@app.get("/api/system-info")
+@app.get("/api/system/info")
 async def get_system_info():
-    """Get system information including GPU status."""
-    return SystemInfo(
-        gpu_available=tts_engine.provider_info.get("gpu_available", False),
-        gpu_name=tts_engine.provider_info.get("gpu_name", ""),
-        execution_provider=tts_engine.providers[0] if tts_engine.providers else "CPU",
-        onnx_version=tts_engine.provider_info.get("onnx_version", ""),
-        model_loaded=tts_engine.model_loaded,
-        audio_cache_size=tts_engine.cache.count,
-        queue_size=generation_queue.pending_count,
-    )
+    """
+    Get system information including GPU status, execution provider,
+    ONNX Runtime version, and model status.
+    """
+    try:
+        import onnxruntime as ort
+        onnx_ver = ort.__version__
+    except Exception:
+        onnx_ver = ""
+
+    return {
+        "execution_provider": tts_engine.providers[0] if tts_engine.providers else "CPU",
+        "providers": tts_engine.providers,
+        "gpu_available": tts_engine.provider_info.get("gpu_available", False),
+        "gpu_name": tts_engine.provider_info.get("gpu_name", ""),
+        "onnx_version": onnx_ver,
+        "model_loaded": tts_engine.model_loaded,
+        "audio_cache_size": tts_engine.cache.count,
+        "queue_size": generation_queue.pending_count,
+    }
 
 
 @app.get("/api/system/providers")
 async def get_providers():
-    """Get available execution providers."""
     return {
         "providers": tts_engine.providers,
         "provider_info": tts_engine.provider_info,
@@ -395,7 +393,6 @@ async def get_providers():
 
 @app.get("/api/system/queue")
 async def get_queue_status():
-    """Get current generation queue status."""
     return generation_queue.get_status()
 
 
@@ -404,74 +401,43 @@ async def get_queue_status():
 
 @app.post("/api/model/load")
 async def load_model():
-    """Load the Supertonic 3 model."""
+    """Load the Supertonic 3 model using official SDK (auto-download)."""
     if tts_engine.model_loaded:
         return {"message": "Model already loaded", "status": "ok"}
 
     success = tts_engine.load_model()
     if not success:
+        err = tts_engine._load_error or "Unknown error"
         raise HTTPException(
             status_code=500,
-            detail="Failed to load model. Ensure model file exists in outputs/models/",
+            detail=f"Failed to load model: {err}",
         )
 
-    return {"message": "Model loaded successfully", "status": "ok"}
+    return {"message": "Model loaded successfully via SDK", "status": "ok"}
 
 
 @app.post("/api/model/download")
-async def download_model(background_tasks: BackgroundTasks):
+async def download_model():
     """
-    Start downloading the Supertonic 3 model in the background.
-    This may take a few minutes depending on your connection.
+    Download/load the Supertonic 3 model using official SDK.
+    The SDK handles auto-download and HuggingFace caching automatically.
     """
     if tts_engine.model_loaded:
         return {"message": "Model already loaded", "status": "ok"}
 
-    background_tasks.add_task(_download_model_task)
-
-    return {
-        "message": "Model download started. Check logs for progress.",
-        "status": "downloading",
-    }
-
-
-async def _download_model_task():
-    """Background task to download the Supertonic model."""
-    import urllib.request
-
-    model_dir = OUTPUTS_DIR / "models"
-    model_dir.mkdir(parents=True, exist_ok=True)
-    model_path = model_dir / "supertonic-3.onnx"
-
-    logger.info(f"Downloading model from {SUPERTONIC_MODEL_URL}...")
-    logger.info(f"Saving to {model_path}")
-
-    try:
-        def report_progress(block_num: int, block_size: int, total_size: int):
-            downloaded = block_num * block_size / (1024 * 1024)
-            total = total_size / (1024 * 1024) if total_size > 0 else 0
-            if total > 0:
-                pct = min(100, downloaded / total * 100)
-                logger.info(f"Download: {downloaded:.1f}/{total:.1f} MB ({pct:.1f}%)")
-            else:
-                logger.info(f"Downloaded: {downloaded:.1f} MB")
-
-        urllib.request.urlretrieve(
-            SUPERTONIC_MODEL_URL,
-            str(model_path),
-            reporthook=report_progress,
-        )
-
-        logger.info("Model download complete. Loading model...")
-        tts_engine.load_model()
-
-    except Exception as e:
-        logger.error(f"Model download failed: {e}")
+    success = tts_engine.load_model()
+    if success:
+        return {"message": "Model downloaded and loaded via SDK", "status": "ok"}
+    else:
+        err = tts_engine._load_error or "Unknown error"
+        return {
+            "message": f"Model download initiated. Status: {err}",
+            "status": "downloading",
+        }
 
 
 @app.get("/api/model/status")
 async def get_model_status():
-    """Get model loading status."""
     return {
         "loaded": tts_engine.model_loaded,
         "model_info": tts_engine.get_model_info(),
@@ -484,14 +450,11 @@ async def get_model_status():
 @app.get("/audio/{filename}")
 async def serve_audio(filename: str):
     """Serve generated audio files."""
-    # Validate filename to prevent path traversal
     if ".." in filename or "/" in filename or "\\" in filename:
         raise HTTPException(status_code=400, detail="Invalid filename")
-
     file_path = OUTPUTS_DIR / filename
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Audio file not found")
-
     return FileResponse(
         str(file_path),
         media_type="audio/wav",
@@ -509,6 +472,7 @@ async def health_check():
         "status": "ok",
         "model_loaded": tts_engine.model_loaded,
         "gpu_available": tts_engine.provider_info.get("gpu_available", False),
+        "execution_provider": tts_engine.providers[0] if tts_engine.providers else "CPU",
         "uptime": time.time() - app.state.__dict__.get("start_time", time.time()),
     }
 
@@ -524,7 +488,8 @@ async def save_start_time():
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
-    """Handle HTTP exceptions with consistent format."""
+    """Handle HTTP exceptions with consistent format - returns JSON the frontend can display."""
+    logger.error(f"HTTP {exc.status_code}: {exc.detail}")
     return Response(
         content=json.dumps({
             "error": exc.detail,

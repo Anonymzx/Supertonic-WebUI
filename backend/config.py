@@ -13,20 +13,11 @@ BACKEND_DIR = BASE_DIR / "backend"
 OUTPUTS_DIR = BASE_DIR / "outputs"
 HISTORY_DIR = OUTPUTS_DIR / "history"
 CACHE_DIR = OUTPUTS_DIR / "cache"
-MODELS_DIR = OUTPUTS_DIR / "models"
 LOGS_DIR = BACKEND_DIR / "logs"
 
 # Ensure directories exist
-for d in [OUTPUTS_DIR, HISTORY_DIR, CACHE_DIR, MODELS_DIR, LOGS_DIR]:
+for d in [OUTPUTS_DIR, HISTORY_DIR, CACHE_DIR, LOGS_DIR]:
     d.mkdir(parents=True, exist_ok=True)
-
-# Supertonic Model Configuration
-SUPERTONIC_MODEL_NAME = os.getenv("SUPERTONIC_MODEL", "supertonic-3-voice-model")
-SUPERTONIC_MODEL_PATH = MODELS_DIR / SUPERTONIC_MODEL_NAME
-SUPERTONIC_MODEL_URL = os.getenv(
-    "SUPERTONIC_MODEL_URL",
-    "https://huggingface.co/supertonic/supertonic-3/resolve/main/model.onnx"
-)
 
 # Server Configuration
 HOST = os.getenv("HOST", "0.0.0.0")
@@ -37,7 +28,7 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 # TTS Default Settings
 DEFAULT_VOICE = "F1"
 DEFAULT_SPEED = 1.0
-DEFAULT_QUALITY_STEPS = 32
+DEFAULT_QUALITY_STEPS = 8  # 8 steps is optimal for standard quality
 DEFAULT_LANGUAGE = "na"  # "na" means auto-detect
 SUPPORTED_LANGUAGES = ["na", "en", "id", "ja", "ko", "zh", "es", "fr", "de"]
 
@@ -64,14 +55,6 @@ AUDIO_FORMAT = "WAV"
 AUDIO_EXTENSION = ".wav"
 MAX_TEXT_LENGTH = 5000
 CHUNK_SIZE = 500  # Characters per chunk for long text
-
-# ONNX Runtime Configuration
-ORT_OPTIONS = {
-    "enable_cpu_mem_arena": False,
-    "enable_mem_pattern": False,
-    "execution_mode": "sequential",
-    "graph_optimization_level": 99,  # Enable all optimizations
-}
 
 # Cache Configuration
 CACHE_MAX_AGE_HOURS = 24

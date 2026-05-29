@@ -1,150 +1,167 @@
 # 🎙️ Supertonic-3 TTS WebUI
 
-A comprehensive local WebUI for the **Supertonic-3** text-to-speech model (~99M parameters). Supports 31 languages with expression tags, language auto-detection, and advanced audio parameters. Runs entirely offline — no cloud connection required.
+> **Local, Offline, Expressive Text-to-Speech**  
+> A powerful Gradio-based WebUI for the **Supertonic-3** TTS model (~99M parameters). Generate natural-sounding speech in 31+ languages with emotion tags, voice customization, and hardware-accelerated inference — **100% offline**.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Language-31%2B-brightgreen" alt="Languages">
+  <img src="https://img.shields.io/badge/Offline-Yes-blue" alt="Offline">
+  <img src="https://img.shields.io/badge/License-OpenRAIL--M-orange" alt="License">
+  <img src="https://img.shields.io/badge/Model-~99M%20Params-lightgrey" alt="Model Size">
+</p>
 
 ---
 
-## ✨ Features
+## ✨ Why Supertonic-3 WebUI?
 
-- 🎤 **Multi-Language & Auto-Detect**: Support for 31+ languages (Indonesian, English, Japanese, etc.) or use `Language Agnostic (na)` to let the engine auto-detect the language.
-- 🎛️ **Advanced Audio Controls**: Adjustable Reading Speed (0.5x to 2.0x) and Synthesis Quality/Total Steps (5 to 12).
-- 🎭 **Expression Tags Helper**: 1-click buttons to insert `<breath>`, `<laugh>`, `<sigh>`, and other natural prosody tags directly into your prompt.
-- ⚙️ **Hardware Flexibility**: Choose execution providers dynamically from the UI: CPU, CUDA (NVIDIA), DirectML (AMD Windows), or ROCm (AMD Linux).
-- 🎨 **Custom Voice Integration**: Upload custom voice JSON embeddings from Supertonic Voice Builder.
-- 🖥️ **Clean Gradio Interface**: Modern, responsive UI with pre-configured example prompts.
-
----
-
-## 🚀 Quick Start
-
-### Option A: Windows (Recommended for AMD/NVIDIA Users)
-We have provided batch scripts to automate the setup and prevent command prompt crashes.
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Anonymzx/Supertonic-WebUI.git
-   cd Supertonic-WebUI
-   ```
-
-2. Run `install.bat` (Double-click or run via terminal).  
-   This will:
-   - Create a virtual environment
-   - Install base dependencies
-   - Prompt you to select the correct ONNX runtime for your hardware
-
-3. Run `run.bat` to launch the WebUI.
-
-4. Open your browser to [http://localhost:7860](http://localhost:7860).
+| Feature | Benefit |
+|---------|---------|
+| 🌍 **31+ Languages + Auto-Detect** | Speak globally — or let the model detect language automatically |
+| 🎭 **Expression Tags** | Add `<breath>`, `<laugh>`, `<sigh>` for human-like prosody |
+| ⚡ **Hardware Agnostic** | Run on CPU, NVIDIA CUDA, AMD DirectML/ROCm — switch anytime |
+| 🎨 **Custom Voice Support** | Import your own voice embeddings from Supertonic Voice Builder |
+| 🔒 **100% Local & Private** | No cloud, no API keys, no data leaves your machine |
+| 🖥️ **Polished Gradio UI** | Intuitive, responsive, with examples and one-click tag insertion |
 
 ---
 
-### Option B: Manual Setup (Linux / macOS / Advanced)
+## 🚀 Installation
 
-#### 1. Install Dependencies
+### ▶️ Windows (One-Click Setup)
 ```bash
 git clone https://github.com/Anonymzx/Supertonic-WebUI.git
 cd Supertonic-WebUI
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
 ```
+1. Double-click `install.bat` → auto-creates venv + installs dependencies + selects optimal ONNX runtime  
+2. Double-click `run.bat` → launches the WebUI  
+3. Open [http://localhost:7860](http://localhost:7860) in your browser  
 
-#### 2. Install ONNX Runtime (Choose One)
-
-| Hardware | Command |
-|----------|---------|
-| **NVIDIA GPU** (Requires CUDA 12.x) | `pip install onnxruntime-gpu` |
-| **AMD GPU Windows** | `pip install onnxruntime-directml` |
-| **AMD GPU Linux** | `pip install onnxruntime-rocm` |
-| **CPU / Apple Silicon** | `pip install onnxruntime` |
-
-#### 3. Run the Application
+### 🐧 Linux / macOS / Advanced Users
 ```bash
+# Clone & setup
+git clone https://github.com/Anonymzx/Supertonic-WebUI.git
+cd Supertonic-WebUI
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Install ONNX Runtime (pick ONE based on your hardware)
+# ───────────────────────────────────────────────────────
+# NVIDIA GPU (CUDA 12.x)   → pip install onnxruntime-gpu
+# AMD GPU (Windows)        → pip install onnxruntime-directml
+# AMD GPU (Linux)          → pip install onnxruntime-rocm
+# CPU / Apple Silicon      → pip install onnxruntime
+
+# Launch
 python main.py
 ```
 
 ---
 
-## 💻 Hardware Requirements
+## 💻 System Requirements
 
 | Component | Minimum | Recommended |
 |-----------|---------|-------------|
-| **CPU** | Dual-core | 4+ core |
-| **RAM** | 4 GB | 8 GB |
-| **GPU** | N/A | NVIDIA/AMD with 2GB+ VRAM (via CUDA/DirectML) |
-| **Disk** | 500 MB | 1 GB (for ONNX model cache) |
+| **CPU** | Dual-core | Quad-core or better |
+| **RAM** | 4 GB | 8 GB+ |
+| **GPU** | None | NVIDIA/AMD with 2GB+ VRAM |
+| **Storage** | 500 MB | 1 GB+ (for model cache) |
+| **OS** | Windows 10 / Linux / macOS | Latest stable release |
+
+> 💡 **Tip**: GPU acceleration (CUDA/DirectML/ROCm) significantly reduces inference time. CPU mode works great for testing and light usage.
 
 ---
 
-## 📖 Usage Guide
+## 🎯 Quick Start Guide
 
-### Basic Workflow
+1. **Select Hardware Backend**  
+   Expand ⚙️ *Hardware Settings* → choose your execution provider (e.g., `DirectML` for AMD on Windows).
 
-1. **Select Execution Provider** — Open the ⚙️ *Hardware Settings* accordion and choose your backend (e.g., DirectML for AMD GPUs on Windows).
-2. **Initialize Engine** — Click *"Initialize / Reinitialize Engine"*.
-3. **Configure Voice & Output** — Select your preferred Language (or Auto-Detect), Voice Style, Speed, and Quality.
-4. **Enter Text** — Type or paste text into the input box.
-5. **Insert Tags** — Use the 🎭 *Expression Tags Helper* to add emotion.
-6. **Generate** — Click *"🚀 Generate Speech"*.
+2. **Initialize the Engine**  
+   Click *"Initialize / Reinitialize Engine"* to load the model.
 
----
+3. **Configure Output**  
+   - 🌐 Language: Pick a language or use `Language Agnostic (na)` for auto-detect  
+   - 🗣️ Voice Style: Choose from preset voices or upload a custom embedding  
+   - ⚙️ Speed: 0.5x (slow) to 2.0x (fast)  
+   - 🎚️ Quality: 5–12 synthesis steps (higher = better quality, slower)
 
-### Expression Tags
+4. **Enter & Enhance Text**  
+   Type your script → use 🎭 *Expression Tags Helper* to insert natural prosody elements.
 
-| Tag | Description | Example |
-|-----|-------------|---------|
-| `<breath>` | Natural breath sound | `Hello <breath> how are you?` |
-| `<laugh>` | Laugh sound | `That's <laugh> hilarious!` |
-| `<sigh>` | Sigh sound | `<sigh> I'm tired` |
-| `<ah>` | Ah interjection | `<ah> I see` |
-| `<uh>` | Uh hesitation | `Let me <uh> think` |
-| `[pause]` | Short pause | `See you... [pause] tomorrow` |
+5. **Generate & Download**  
+   Click *"🚀 Generate Speech"* → preview → save as WAV/MP3.
 
 ---
 
-### Using Custom Voices
+## 🎭 Expression Tags Reference
 
-If you have exported a custom voice embedding from Supertonic:
+Inject emotion and natural pauses directly into your text:
 
-1. Navigate to the **"🎨 Custom Voice"** tab.
-2. Upload your generated `.json` file containing the `voice_embedding` array.
-3. Return to the main tab; the engine will prioritize your uploaded JSON over the default voice style dropdown.
+| Tag | Effect | Example Usage |
+|-----|--------|---------------|
+| `<breath>` | Soft inhale/exhale | `Welcome <breath> to our channel` |
+| `<laugh>` | Light chuckle or laugh | `That was <laugh> amazing!` |
+| `<sigh>` | Expressive sigh | `<sigh> I guess we'll try again` |
+| `<ah>` / `<uh>` | Natural hesitation | `<uh> let me think about that` |
+| `[pause]` | Brief silence (~0.5s) | `Wait for it... [pause] boom!` |
+
+> 💡 **Pro Tip**: Combine tags for ultra-realistic delivery:  
+> `"I can't believe it <laugh> <breath> actually worked!"`
 
 ---
 
-## 📂 Project Structure
+## 🎨 Custom Voice Integration
 
-```
-Supertonic-WebUI/
-├── main.py             # Main Gradio application (formerly app.py)
-├── install.bat         # Automated setup script for Windows
-├── run.bat             # Safe launcher script for Windows
-├── requirements.txt    # Base Python dependencies
-└── README.md           # This documentation
-```
+Bring your own voice:
+
+1. Generate a voice embedding via **Supertonic Voice Builder** → export as `.json`  
+2. In the WebUI, go to the *"🎨 Custom Voice"* tab  
+3. Upload your `.json` file (must contain `voice_embedding` array)  
+4. Return to main tab → your custom voice is now active  
+
+> ⚠️ Custom voices override the preset voice selector. Upload a new file to switch voices.
 
 ---
 
 ## 🛠️ Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| **Model Download Fails** | The ~99M parameter model is downloaded automatically on the first run. Ensure you have an active internet connection. |
-| **GPU Not Detected / Fallback to CPU** | Ensure you installed the correct ONNX package (`onnxruntime-directml` for AMD on Windows, `onnxruntime-gpu` for NVIDIA). Check terminal logs for initialization errors. |
-| **Script Force Closes (Windows)** | Do not double-click `main.py`. Always use `run.bat` or execute `python main.py` directly from the VS Code / Command Prompt terminal to view error logs. |
+| Issue | Likely Cause | Solution |
+|-------|--------------|----------|
+| ❌ Model won't download | No internet / firewall | Ensure connection on first run; model caches locally after |
+| ⚠️ GPU not detected | Wrong ONNX package | Reinstall with correct runtime: `onnxruntime-gpu` / `directml` / `rocm` |
+| 🪟 App closes instantly (Windows) | Launched via double-click | Always use `run.bat` or run `python main.py` from terminal to see errors |
+| 🐌 Slow inference | CPU mode / low steps | Switch to GPU backend or increase *Quality* steps (max 12) |
+| 🔊 Audio sounds robotic | Missing expression tags | Use `<breath>`, `[pause]`, etc. to add natural rhythm |
 
 ---
 
-## 📄 License & Links
+## 🔗 Resources & Credits
 
-- **UI Repository**: [Anonymzx/Supertonic-WebUI](https://github.com/Anonymzx/Supertonic-WebUI)
-- **Model Engine**: [Supertonic-3 on Hugging Face](https://huggingface.co) (OpenRAIL-M License)
-- **Framework**: [Gradio](https://www.gradio.app/)
+- **📦 Model**: [Supertonic-3 on Hugging Face](https://huggingface.co) *(OpenRAIL-M License)*  
+- **🧠 Core Engine**: Official `supertonic` Python package  
+- **🎨 UI Framework**: [Gradio](https://www.gradio.app/)  
+- **🔧 ONNX Runtime**: [Microsoft ONNX](https://onnxruntime.ai/)  
 
-> **Note**: This project is a WebUI wrapper. The underlying TTS logic and models are powered by the official `supertonic` Python package.
+```
+⚠️ Disclaimer: This WebUI is a community wrapper. 
+The Supertonic-3 model and its license terms are maintained by the original authors.
+```
+
+---
+
+## 🤝 Contributing & Support
+
+Found a bug? Have a feature idea?
+
+1. 🐛 [Open an Issue](https://github.com/Anonymzx/Supertonic-WebUI/issues)  
+2. 🔀 Submit a Pull Request with clear description  
+3. 💬 Join discussions in the repo's *Discussions* tab  
+
+> 🙏 Special thanks to the Supertonic team, ONNX community, and Gradio developers for making local AI accessible to everyone.
 
 ---
 
 <p align="center">
-  <sub>Built with ❤️ for the local TTS community</sub>
+  <sub>Built with ❤️ by <a href="https://github.com/Anonymzx">@Anonymzx</a> • For creators, developers, and privacy-first users</sub>
 </p>

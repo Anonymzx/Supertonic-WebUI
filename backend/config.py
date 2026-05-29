@@ -11,12 +11,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 BACKEND_DIR = BASE_DIR / "backend"
 OUTPUTS_DIR = BASE_DIR / "outputs"
+MODELS_DIR = OUTPUTS_DIR / "models"
 HISTORY_DIR = OUTPUTS_DIR / "history"
 CACHE_DIR = OUTPUTS_DIR / "cache"
 LOGS_DIR = BACKEND_DIR / "logs"
 
 # Ensure directories exist
-for d in [OUTPUTS_DIR, HISTORY_DIR, CACHE_DIR, LOGS_DIR]:
+for d in [OUTPUTS_DIR, MODELS_DIR, HISTORY_DIR, CACHE_DIR, LOGS_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
 # Server Configuration
@@ -24,6 +25,10 @@ HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
 BACKEND_URL = f"http://{HOST}:{PORT}"
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+# HuggingFace model repo for Supertonic 3
+HF_MODEL_REPO = os.getenv("HF_MODEL_REPO", "supertonic/supertonic-3")
+HF_MODEL_FILENAME = os.getenv("HF_MODEL_FILENAME", "model.onnx")
 
 # TTS Default Settings
 DEFAULT_VOICE = "F1"

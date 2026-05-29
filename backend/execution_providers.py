@@ -13,7 +13,7 @@ def detect_execution_providers() -> List[str]:
     Detect available ONNX Runtime execution providers.
     Returns list of provider names in priority order.
 
-    Priority: DmlExecutionProvider (AMD GPU) > CPUExecutionProvider (fallback)
+    Priority: DmlExecutionProvider (AMD GPU) > CUDAExecutionProvider > CPUExecutionProvider
     """
     try:
         import onnxruntime as ort

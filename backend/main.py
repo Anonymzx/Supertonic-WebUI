@@ -24,7 +24,8 @@ from fastapi.responses import FileResponse, StreamingResponse, Response
 
 from config import (
     HOST, PORT, BACKEND_URL, FRONTEND_URL,
-    SAMPLE_RATE, AUDIO_EXTENSION, OUTPUTS_DIR,
+    SAMPLE_RATE, AUDIO_EXTENSION, OUTPUTS_DIR, MODELS_DIR,
+    HF_MODEL_REPO, HF_MODEL_FILENAME,
     AVAILABLE_VOICES, logger,
 )
 from models import (
@@ -140,22 +141,24 @@ async def text_to_speech(request: TTSRequest):
     """
     Generate speech from text using the official Supertonic 3 SDK.
     Auto-downloads model via HuggingFace cache if not present.
+    Returns 400 if model not loaded instead of crashing with 500.
     """
     try:
         text = request.text.strip()
         if not text:
             raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-        # Try to load model if not loaded (auto-download)
+        # Validate model is loaded BEFORE processing
         if not tts_engine.model_loaded:
+            # Try one more time to load (SDK auto-download)
             logger.info("Model not loaded. Attempting SDK load with auto_download...")
             success = tts_engine.load_model()
             if not success:
-                err = tts_engine._load_error or "Unknown error"
+                err = tts_engine._load_error or "Model not available"
+                # Return 400 with clear message instead of 500 crash
                 raise HTTPException(
-                    status_code=503,
-                    detail=f"Model could not be loaded: {err}. "
-                           f"Ensure supertonic SDK is installed: pip install supertonic",
+                    status_code=400,
+                    detail=f"Model not loaded. Please download or load the model in Settings. ({err})",
                 )
 
         # Generate audio
@@ -208,7 +211,8 @@ async def text_to_speech(request: TTSRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except RuntimeError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Don't crash on runtime errors - return 400 with message
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"[FAIL] TTS generation failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
@@ -222,8 +226,8 @@ async def text_to_speech_stream(request: TTSRequest):
             success = tts_engine.load_model()
             if not success:
                 raise HTTPException(
-                    status_code=503,
-                    detail=f"Model not loaded: {tts_engine._load_error}",
+                    status_code=400,
+                    detail=f"Model not loaded. Please download or load the model in Settings. ({tts_engine._load_error})",
                 )
 
         text = request.text.strip()
@@ -274,8 +278,8 @@ async def batch_text_to_speech(request: BatchTTSRequest):
             success = tts_engine.load_model()
             if not success:
                 raise HTTPException(
-                    status_code=503,
-                    detail=f"Model not loaded: {tts_engine._load_error}",
+                    status_code=400,
+                    detail=f"Model not loaded. Please download or load the model in Settings. ({tts_engine._load_error})",
                 )
 
         results = []
@@ -421,10 +425,7 @@ async def get_system_info():
 
 @app.get("/api/debug/providers")
 async def debug_providers():
-    """
-    Debug endpoint to diagnose provider/installation issues.
-    Returns detailed info about the Python environment and ONNX setup.
-    """
+    """Debug endpoint to diagnose provider/installation issues."""
     import sys as sys_module
 
     info = {
@@ -437,9 +438,9 @@ async def debug_providers():
         "supertonic_installed": False,
         "supertonic_error": "",
         "provider_details": {},
+        "models_in_outputs": [str(f.name) for f in MODELS_DIR.glob("*")],
     }
 
-    # Check ONNX Runtime
     try:
         import onnxruntime as ort
         info["onnxruntime_version"] = ort.__version__
@@ -451,7 +452,6 @@ async def debug_providers():
     except Exception as e:
         info["onnxruntime_version"] = f"NOT INSTALLED: {e}"
 
-    # Check Supertonic
     try:
         import supertonic
         info["supertonic_installed"] = True
@@ -460,7 +460,6 @@ async def debug_providers():
         info["supertonic_installed"] = False
         info["supertonic_error"] = str(e)
 
-    # Check DirectML specifically
     try:
         import onnxruntime as ort
         dml_providers = [p for p in ort.get_available_providers() if "Dml" in p]
@@ -507,20 +506,58 @@ async def load_model():
 @app.post("/api/model/download")
 async def download_model():
     """
-    Download/load the Supertonic 3 model using official SDK.
-    The SDK handles auto-download and HuggingFace caching automatically.
+    Download the Supertonic 3 model using huggingface_hub.
+    Falls back to official SDK auto_download if huggingface_hub unavailable.
     """
     if tts_engine.model_loaded:
         return {"message": "Model already loaded", "status": "ok"}
 
-    success = tts_engine.load_model()
-    if success:
-        return {"message": "Model downloaded and loaded via SDK", "status": "ok"}
-    else:
-        err = tts_engine._load_error or "Unknown error"
+    # Try huggingface_hub first
+    try:
+        from huggingface_hub import hf_hub_download
+
+        logger.info(f"Downloading model from HuggingFace: {HF_MODEL_REPO}/{HF_MODEL_FILENAME}")
+        model_path = hf_hub_download(
+            repo_id=HF_MODEL_REPO,
+            filename=HF_MODEL_FILENAME,
+            local_dir=str(MODELS_DIR),
+            local_dir_use_symlinks=False,
+            resume_download=True,
+        )
+        logger.info(f"[OK] Model downloaded to: {model_path}")
+
+        # Now try to load via SDK
+        success = tts_engine.load_model()
+        if success:
+            return {"message": "Model downloaded and loaded successfully", "status": "ok"}
+        else:
+            return {
+                "message": f"Model downloaded but SDK loading failed: {tts_engine._load_error}",
+                "status": "downloaded",
+            }
+
+    except ImportError:
+        logger.warning("huggingface_hub not installed. Falling back to SDK auto_download.")
+        # Fallback to SDK auto-download
+        success = tts_engine.load_model()
+        if success:
+            return {"message": "Model loaded via SDK auto-download", "status": "ok"}
+        else:
+            err = tts_engine._load_error or "Unknown error"
+            return {
+                "message": f"Model download failed: {err}. Install huggingface_hub: pip install huggingface_hub",
+                "status": "failed",
+            }
+
+    except Exception as e:
+        logger.error(f"[FAIL] Model download failed: {e}")
+        # Last resort: try SDK auto_download
+        success = tts_engine.load_model()
+        if success:
+            return {"message": "Model loaded via SDK fallback", "status": "ok"}
         return {
-            "message": f"Model download initiated. Status: {err}",
-            "status": "downloading",
+            "message": f"Download failed: {str(e)}",
+            "status": "failed",
         }
 
 

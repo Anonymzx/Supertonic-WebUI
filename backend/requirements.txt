@@ -9,5 +9,11 @@ python-multipart>=0.0.9
 soundfile>=0.12.0
 numpy>=1.26.0
 
+# Model Download (HuggingFace)
+huggingface_hub>=0.20.0
+
+# DirectML for AMD GPU (replaces standard onnxruntime)
+# onnxruntime-directml>=1.17.0  (installed separately via install.bat for AMD)
+
 # Development
 python-dotenv>=1.0.0

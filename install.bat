@@ -82,7 +82,7 @@ if errorlevel 1 (
 rem Install core backend dependencies from requirements.txt
 echo.
 echo  Installing core packages (fastapi, uvicorn, etc.)...
-python -m pip install -r backend/requirements.txt
+python -m pip install -r requirements.txt
 if errorlevel 1 (
     echo  WARNING: requirements.txt install failed. Trying direct install...
     python -m pip install fastapi uvicorn pydantic python-multipart soundfile numpy python-dotenv

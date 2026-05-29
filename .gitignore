@@ -1,0 +1,39 @@
+# Virtual Environments
+venv/
+env/
+.env
+
+# Python Cache & Build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Generated Audio Files (Mencegah file hasil generate ikut ter-commit)
+*.wav
+*.mp3
+*.flac
+outputs/
+
+# Custom Voice Uploads (Opsional: mencegah upload data suara pribadi ke GitHub)
+# Jika Anda ingin commit file json tertentu, hapus tanda '#' di bawah ini
+# *.json
+
+# VS Code & IDE Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -43,23 +43,24 @@ pip install -r requirements.txt --quiet
 echo.
 echo [INFO] Checking ONNX Runtime installation...
 python -c "import onnxruntime" >nul 2>&1
-if errorlevel 1 (
-    echo [WARNING] onnxruntime is not installed!
-    echo.
-    echo Please install the appropriate ONNX runtime for your hardware:
-    echo.
-    echo   NVIDIA GPU:  pip install onnxruntime-gpu
-    echo   AMD GPU:     pip install onnxruntime-directml
-    echo   AMD Linux:   pip install onnxruntime-rocm
-    echo   CPU only:    pip install onnxruntime
-    echo.
-    set /pCHOICE="Press 1 to install CPU version, or any key to continue anyway: "
-    if "%CHOICE%"=="1" (
-        echo [INFO] Installing onnxruntime (CPU)...
-        pip install onnxruntime --quiet
-    )
+if not errorlevel 1 goto onnx_ok
+
+echo [WARNING] onnxruntime is not installed!
+echo.
+echo Please install the appropriate ONNX runtime for your hardware:
+echo.
+echo   NVIDIA GPU:  pip install onnxruntime-gpu
+echo   AMD GPU:     pip install onnxruntime-directml
+echo   AMD Linux:   pip install onnxruntime-rocm
+echo   CPU only:    pip install onnxruntime
+echo.
+set /p CHOICE="Press 1 to install CPU version, or any key to continue anyway: "
+if "%CHOICE%"=="1" (
+    echo [INFO] Installing onnxruntime CPU version...
+    pip install onnxruntime --quiet
 )
 
+:onnx_ok
 echo.
 echo ========================================
 echo   Starting Supertonic-3 TTS WebUI...

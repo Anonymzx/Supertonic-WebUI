@@ -32,8 +32,8 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-python --version
-echo  Python found!
+for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VER=%%i
+echo  Python %PYTHON_VER% found!
 echo.
 
 rem -------------------------------------------------------
@@ -53,8 +53,8 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-node --version
-echo  Node.js found!
+for /f "tokens=1" %%i in ('node --version') do set NODE_VER=%%i
+echo  Node.js %NODE_VER% found!
 echo.
 
 rem -------------------------------------------------------
@@ -72,8 +72,8 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-npm --version
-echo  npm found!
+for /f "delims=" %%i in ('npm --version') do set NPM_VER=%%i
+echo  npm %NPM_VER% found!
 echo.
 
 rem -------------------------------------------------------
@@ -122,33 +122,36 @@ if %errorlevel% neq 0 (
 echo  Pip upgraded.
 
 rem Install backend dependencies from requirements.txt
-echo  Installing backend packages...
-pip install -r requirements.txt
+echo  Installing backend packages (this may take a few minutes)...
+
+rem First, install all base requirements EXCEPT onnxruntime
+python -m pip install fastapi>=0.110.0 uvicorn[standard]>=0.27.0 pydantic>=2.6.0 python-multipart>=0.0.9 soundfile>=0.12.0 numpy>=1.26.0 python-dotenv>=1.0.0
 if %errorlevel% neq 0 (
     echo.
-    echo  WARNING: Some packages from requirements.txt failed to install.
-    echo  Attempting fallback installation...
-    pip install fastapi uvicorn[standard] pydantic python-multipart soundfile numpy python-dotenv 2>&1
-    if %errorlevel% neq 0 (
-        echo.
-        echo  ERROR: Backend packages installation failed.
-        echo  Try running manually: pip install -r requirements.txt
-        echo.
-        pause
-        exit /b 1
-    )
+    echo  ERROR: Core backend packages installation failed.
+    echo  Try running manually: pip install fastapi uvicorn soundfile numpy
+    echo.
+    pause
+    exit /b 1
 )
+echo  Core backend packages installed.
 
-rem Install ONNX Runtime with DirectML for AMD GPU acceleration
-echo  Installing ONNX Runtime with DirectML (AMD GPU)...
-pip install onnxruntime-directml 2>&1
-if %errorlevel% neq 0 (
-    echo  WARNING: onnxruntime-directml installation failed.
-    echo  Falling back to CPU-only ONNX Runtime...
-    pip install onnxruntime 2>&1
-    if %errorlevel% neq 0 (
-        echo  WARNING: Could not install ONNX Runtime.
-        echo  You can install it manually after setup.
+rem Try to install ONNX Runtime with DirectML (AMD GPU)
+echo  Attempting to install onnxruntime-directml for AMD GPU...
+python -m pip install onnxruntime-directml 2>&1
+if %errorlevel% equ 0 (
+    echo  SUCCESS: onnxruntime-directml installed! AMD GPU acceleration enabled.
+) else (
+    echo  WARNING: onnxruntime-directml could not be installed.
+    echo  This is expected if you don't have an AMD GPU or proper drivers.
+    echo.
+    echo  Installing CPU-only ONNX Runtime as fallback...
+    python -m pip install onnxruntime
+    if %errorlevel% equ 0 (
+        echo  SUCCESS: onnxruntime (CPU) installed.
+    ) else (
+        echo  WARNING: Could not install any ONNX Runtime version.
+        echo  The app will still work but you need to install it manually.
     )
 )
 
@@ -221,6 +224,8 @@ echo   3. Open http://localhost:5173 in your browser
 echo.
 echo  AMD GPU Users: If onnxruntime-directml is installed,
 echo  the app will use your GPU automatically.
+echo.
+echo  CPU Users: The app will use CPU mode automatically.
 echo.
 echo  Need help? Check README.md for troubleshooting.
 echo.

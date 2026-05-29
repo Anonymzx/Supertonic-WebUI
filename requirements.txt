@@ -1,22 +1,13 @@
 # Supertonic TTS WebUI - Backend Dependencies
 # FastAPI
-fastapi==0.110.0
-uvicorn[standard]==0.27.1
-pydantic==2.6.1
-python-multipart==0.0.9
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.6.0
+python-multipart>=0.0.9
 
 # Audio Processing
-soundfile==0.12.1
-numpy==1.26.4
-
-# ONNX Runtime with DirectML (AMD GPU)
-# Install onnxruntime-directml for AMD GPU acceleration
-# or onnxruntime for CPU-only mode
-onnxruntime-directml==1.17.1
-
-# Supertonic TTS SDK
-# Install from: pip install supertonic
+soundfile>=0.12.0
+numpy>=1.26.0
 
 # Development
-python-dotenv==1.0.1
-</write_to_file>
+python-dotenv>=1.0.0

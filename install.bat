@@ -341,4 +341,3 @@ echo.
 echo  Need help? Check README.md for troubleshooting.
 echo.
 pause
-</write_to_file>

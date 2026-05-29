@@ -1,5 +1,6 @@
 @echo off
 title Supertonic TTS WebUI - Full Installer
+setlocal enabledelayedexpansion
 
 rem ============================================================
 rem  Supertonic TTS WebUI - Full Automatic Installer
@@ -8,8 +9,6 @@ rem ============================================================
 
 rem Enable UTF-8 support
 chcp 65001 >nul 2>&1
-
-setlocal enabledelayedexpansion
 
 echo.
 echo ============================================
@@ -22,20 +21,28 @@ echo  Please wait, this may take a few minutes...
 echo.
 
 rem ============================================================
-rem  STEP 0 - Save script directory (handles spaces in paths)
+rem  DEBUG: Show script location
+rem ============================================================
+echo  [DEBUG] Script directory: %~dp0
+echo  [DEBUG] System: Windows %OS%
+echo.
+
+rem ============================================================
+rem  Save script directory (handles spaces in paths)
 rem ============================================================
 set "SCRIPT_DIR=%~dp0"
 set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
 rem ============================================================
-rem  STEP 1 - Check Python
+rem  STEP 1 - Check Python using safe where command
 rem ============================================================
 echo [1/8] Checking Python installation...
 
-python --version >nul 2>&1
+rem Use 'where' instead of for/f loops - safer, no hanging
+where python >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo  ERROR: Python is not installed.
+    echo  ERROR: Python is not installed or not in PATH.
     echo.
     echo  Please install Python 3.10 or later:
     echo    https://www.python.org/downloads/
@@ -43,51 +50,70 @@ if %errorlevel% neq 0 (
     echo  Make sure to check "Add Python to PATH" during install.
     echo.
     pause
-    goto :eof
+    endlocal
+    exit /b 1
 )
 
-for /f "tokens=*" %%a in ('python --version 2^>^&1') do set "PY_VER=%%a"
-echo  !PY_VER! - found
+rem Show simple version output
+python --version
+if %errorlevel% neq 0 (
+    echo  WARNING: Python found but version check failed.
+)
+echo  [DEBUG] Python path: 
+where python 2>&1
 echo.
 
 rem ============================================================
-rem  STEP 2 - Check Node.js
+rem  STEP 2 - Check Node.js using safe where command
 rem ============================================================
 echo [2/8] Checking Node.js installation...
 
-node --version >nul 2>&1
+where node >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo  ERROR: Node.js is not installed.
+    echo  ERROR: Node.js is not installed or not in PATH.
     echo.
     echo  Please install Node.js 18 or later:
     echo    https://nodejs.org/
     echo.
     pause
-    goto :eof
+    endlocal
+    exit /b 1
 )
 
-for /f "tokens=*" %%a in ('node --version') do set "NODE_VER=%%a"
-echo  Node.js !NODE_VER! - found
+node --version
+if %errorlevel% neq 0 (
+    echo  WARNING: Node.js found but version check failed.
+)
+echo  [DEBUG] Node.js path:
+where node 2>&1
 echo.
 
 rem ============================================================
-rem  STEP 3 - Check npm
+rem  STEP 3 - Check npm using safe where command
 rem ============================================================
 echo [3/8] Checking npm installation...
 
-npm --version >nul 2>&1
+rem Critical fix: use where instead of for/f to avoid hanging
+where npm >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo  ERROR: npm is not installed.
-    echo  Node.js should include npm. Please reinstall Node.js.
+    echo  ERROR: npm is not installed or not in PATH.
+    echo.
+    echo  npm should be included with Node.js. Try reinstalling Node.js.
+    echo    https://nodejs.org/
     echo.
     pause
-    goto :eof
+    endlocal
+    exit /b 1
 )
 
-for /f "tokens=*" %%a in ('npm --version') do set "NPM_VER=%%a"
-echo  npm !NPM_VER! - found
+npm --version
+if %errorlevel% neq 0 (
+    echo  WARNING: npm found but version check failed.
+)
+echo  [DEBUG] npm path:
+where npm 2>&1
 echo.
 
 rem ============================================================
@@ -106,7 +132,8 @@ if exist "%SCRIPT_DIR%\venv" (
         echo  ERROR: Failed to create virtual environment.
         echo.
         pause
-        goto :eof
+        endlocal
+        exit /b 1
     )
     echo  Virtual environment created.
 )
@@ -120,9 +147,10 @@ echo [5/8] Installing Python backend dependencies...
 cd /d "%SCRIPT_DIR%"
 
 if not exist "venv\Scripts\activate.bat" (
-    echo  ERROR: Virtual environment not found at venv\Scripts\activate.bat
+    echo  ERROR: Virtual environment not found.
     pause
-    goto :eof
+    endlocal
+    exit /b 1
 )
 
 rem Activate virtual environment
@@ -130,7 +158,8 @@ call "venv\Scripts\activate.bat"
 if %errorlevel% neq 0 (
     echo  ERROR: Failed to activate virtual environment.
     pause
-    goto :eof
+    endlocal
+    exit /b 1
 )
 echo  Virtual environment activated.
 
@@ -142,7 +171,7 @@ if %errorlevel% neq 0 (
 )
 echo  Pip upgraded.
 
-rem Install from requirements.txt
+rem Install from requirements.txt (backend first, then root)
 echo  Installing packages from requirements.txt...
 if exist "%SCRIPT_DIR%\backend\requirements.txt" (
     pip install -r "%SCRIPT_DIR%\backend\requirements.txt"
@@ -159,10 +188,9 @@ if %errorlevel% neq 0 (
     if %errorlevel% neq 0 (
         echo.
         echo  ERROR: Backend core packages installation failed.
-        echo  Try manually: pip install fastapi uvicorn pydantic soundfile numpy
-        echo.
         pause
-        goto :eof
+        endlocal
+        exit /b 1
     )
 )
 echo  Core backend packages installed.
@@ -177,7 +205,8 @@ if %errorlevel% neq 0 (
     echo  Try manually: pip install supertonic
     echo.
     pause
-    goto :eof
+    endlocal
+    exit /b 1
 )
 echo  Supertonic SDK installed.
 
@@ -197,7 +226,7 @@ pip install onnxruntime-directml
 if %errorlevel% neq 0 (
     echo.
     echo  WARNING: onnxruntime-directml installation failed.
-    echo  This is expected if system does not support DirectML.
+    echo  This can happen without AMD GPU or proper drivers.
     echo.
     echo  Installing CPU-only ONNX Runtime as fallback...
     pip install onnxruntime
@@ -234,7 +263,8 @@ if not exist "package.json" (
             echo  Try manually: cd frontend && npm install
             echo.
             pause
-            goto :eof
+            endlocal
+            exit /b 1
         )
         echo  npm packages installed.
     )
@@ -258,7 +288,7 @@ echo  Output directories created.
 echo.
 
 rem ============================================================
-rem  STEP 8 - Verify Installations
+rem  STEP 8 - Verify Installations (quick non-blocking checks)
 rem ============================================================
 echo [8/8] Verifying installations...
 
@@ -270,29 +300,35 @@ set "VERIFY_FAIL=0"
 
 rem Check Supertonic
 echo  Testing Supertonic SDK...
-python -c "import supertonic; print('  - supertonic SDK: OK')" 2>&1
+python -c "import supertonic; print('  - supertonic SDK: OK')" 2>nul
 if %errorlevel% neq 0 (
     echo  - supertonic SDK: MISSING
     set VERIFY_FAIL=1
+) else (
+    echo  - supertonic SDK: OK
 )
 
-rem Check ONNX Runtime providers
+rem Check ONNX Runtime
 echo  Testing ONNX Runtime...
-python -c "import onnxruntime as ort; provs=ort.get_available_providers(); print('  - onnxruntime providers:', provs)" 2>&1
+python -c "import onnxruntime; print('  - onnxruntime: OK')" 2>nul
 if %errorlevel% neq 0 (
     echo  - onnxruntime: MISSING
     set VERIFY_FAIL=1
+) else (
+    echo  - onnxruntime: OK
 )
 
-rem Check DirectML specifically
-python -c "import onnxruntime as ort; has_dml='DmlExecutionProvider' in ort.get_available_providers(); print('  - DirectML (AMD GPU):', 'AVAILABLE' if has_dml else 'NOT AVAILABLE')" 2>&1
+rem Check DirectML
+python -c "import onnxruntime as ort; print('  - DirectML (AMD GPU):', 'AVAILABLE' if 'DmlExecutionProvider' in ort.get_available_providers() else 'NOT AVAILABLE')" 2>nul
 
 rem Check FastAPI
 echo  Testing FastAPI...
-python -c "import fastapi; print('  - fastapi: OK')" 2>&1
+python -c "import fastapi; print('  - fastapi: OK')" 2>nul
 if %errorlevel% neq 0 (
     echo  - fastapi: MISSING
     set VERIFY_FAIL=1
+) else (
+    echo  - fastapi: OK
 )
 
 rem Check frontend node_modules
@@ -335,9 +371,10 @@ echo  Open in browser: http://localhost:5173
 echo.
 echo  GPU Acceleration:
 if exist "%SCRIPT_DIR%\venv\Scripts\activate.bat" (
-    "%SCRIPT_DIR%\venv\Scripts\python.exe" -c "import onnxruntime as ort; provs=ort.get_available_providers(); dml='DmlExecutionProvider' in provs; print('    AMD DirectML:','ENABLED' if dml else 'NOT AVAILABLE (CPU mode)')" 2>nul
+    "%SCRIPT_DIR%\venv\Scripts\python.exe" -c "import onnxruntime as ort; provs=ort.get_available_providers(); print('    Available providers:', provs); print('    AMD DirectML:', 'ENABLED' if 'DmlExecutionProvider' in provs else 'NOT AVAILABLE (CPU mode)')" 2>nul
 )
 echo.
 echo  Need help? Check README.md for troubleshooting.
 echo.
 pause
+endlocal

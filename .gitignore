@@ -1,0 +1,55 @@
+# Supertonic TTS WebUI - Git Ignore
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# Output files
+outputs/*.wav
+outputs/models/
+outputs/cache/
+outputs/history/
+backend/logs/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Logs
+*.log
+logs/
+
+# Audio files
+*.wav
+!outputs/.gitkeep
+!outputs/history/.gitkeep
+
+# Misc
+*.bak
+*.tmp
+</write_to_file>

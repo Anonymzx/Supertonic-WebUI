@@ -1,0 +1,21 @@
+# Requirements for Supertonic-3 WebUI
+gradio>=4.0.0
+supertonic>=1.0.0
+
+# ONNX Runtime Installation Instructions:
+# IMPORTANT: Install the appropriate ONNX runtime based on your hardware BEFORE running app.py
+#
+# For NVIDIA GPU (CUDA):
+#   pip install onnxruntime-gpu
+#
+# For AMD GPU (DirectML on Windows):
+#   pip install onnxruntime-directml
+#
+# For AMD GPU (ROCm on Linux):
+#   pip install onnxruntime-rocm
+#
+# For Apple Silicon / CPU only:
+#   pip install onnxruntime (standard package works fine)
+#
+# If no specific runtime is installed, the default onnxruntime package will be used (CPU only).
+# The WebUI dropdown allows selecting the execution provider at runtime for flexibility.

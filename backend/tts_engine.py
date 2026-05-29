@@ -33,7 +33,6 @@ class TextPreprocessor:
     def clean_text(text: str) -> str:
         """Clean and normalize text for TTS processing."""
         text = re.sub(r'\s+', ' ', text.strip())
-        # Remove expression tags
         for tag in EXPRESSION_TAGS:
             text = text.replace(tag, '')
         return text
@@ -139,8 +138,12 @@ class SupertonicTTS:
         self.text_processor = TextPreprocessor()
         self._load_error: Optional[str] = None
 
-        # Detect execution providers on init
-        self._setup_providers()
+        # Detect execution providers on init (wrapped in try/except to prevent startup crash)
+        try:
+            self._setup_providers()
+        except Exception as e:
+            logger.warning(f"[WARNING] Provider detection failed during init: {e}")
+            self.providers = ["CPUExecutionProvider"]
 
     def _setup_providers(self) -> None:
         """Detect and configure execution providers."""
@@ -164,10 +167,8 @@ class SupertonicTTS:
         try:
             logger.info("Loading Supertonic 3 via official SDK (auto_download=True)...")
 
-            # Import supertonic SDK
             from supertonic import TTS
 
-            # Initialize TTS with auto-download enabled
             if "DmlExecutionProvider" in self.providers:
                 logger.info("Using DirectML execution provider for AMD GPU")
                 self.tts = TTS(
@@ -181,7 +182,6 @@ class SupertonicTTS:
                     providers=["CPUExecutionProvider"],
                 )
 
-            # Pre-cache voice styles for all available voices
             voice_ids = list(AVAILABLE_VOICES.keys())
             for vid in voice_ids:
                 try:
@@ -233,33 +233,20 @@ class SupertonicTTS:
     ) -> Tuple[np.ndarray, Dict[str, Any]]:
         """
         Generate speech audio from text using official Supertonic SDK.
-
-        Args:
-            text: Input text to synthesize
-            voice: Voice ID (F1-F5, M1-M5)
-            speed: Speech speed multiplier (0.5-2.0)
-            quality_steps: Number of sampling steps (8-64)
-            language: Language code (na=auto, id=Indonesian, en=English)
-
-        Returns:
-            Tuple of (audio_array, metadata_dict)
         """
         start_time = time.time()
 
         if not self.tts or not self.model_loaded:
             raise RuntimeError("Model not loaded. Call load_model() first.")
 
-        # Clean and prepare text
         text = self.text_processor.clean_text(text)
         if not text:
             raise ValueError("Empty text after preprocessing")
 
-        # Auto-detect language if set to auto
         if language == "na":
             language = self.text_processor.detect_language(text)
         logger.info(f"Detected language: {language}")
 
-        # Check cache first
         cached = self.cache.get(text, voice, speed, quality_steps, language)
         if cached:
             audio, sr = sf.read(str(cached))
@@ -270,19 +257,12 @@ class SupertonicTTS:
                 "duration_ms": duration_ms,
                 "cached": True,
             }
-            logger.info(f"Cache hit for: {text[:50]}...")
             return audio, metadata
 
-        # Get voice style and synthesize
         try:
             voice_style = self.get_voice_style(voice)
+            logger.info(f"Synthesizing: voice={voice}, lang={language}, steps={quality_steps}, speed={speed}")
 
-            logger.info(
-                f"Synthesizing: voice={voice}, lang={language}, "
-                f"steps={quality_steps}, speed={speed}"
-            )
-
-            # Official SDK synthesize call
             wav, duration = self.tts.synthesize(
                 text=text,
                 lang=language,
@@ -291,15 +271,12 @@ class SupertonicTTS:
                 speed=speed,
             )
 
-            # Convert to numpy array if needed
             audio = np.array(wav, dtype=np.float32)
             if audio.ndim > 1:
                 audio = audio.flatten()
 
             inference_time = (time.time() - start_time) * 1000
             duration_ms = int(duration * 1000) if isinstance(duration, float) else int(len(audio) / SAMPLE_RATE * 1000)
-
-            # Cache the result
             self.cache.set(text, voice, speed, quality_steps, language, audio)
 
             metadata = {
@@ -308,30 +285,15 @@ class SupertonicTTS:
                 "cached": False,
             }
 
-            logger.info(
-                f"Generated {duration_ms}ms audio in {inference_time:.0f}ms "
-                f"(voice={voice}, lang={language})"
-            )
-
+            logger.info(f"Generated {duration_ms}ms audio in {inference_time:.0f}ms (voice={voice}, lang={language})")
             return audio, metadata
 
         except Exception as e:
             logger.error(f"[FAIL] TTS synthesis failed: {e}", exc_info=True)
             raise RuntimeError(f"TTS synthesis error: {e}")
 
-    def generate_streaming(
-        self,
-        text: str,
-        voice: str = "F1",
-        speed: float = 1.0,
-        quality_steps: int = 8,
-        language: str = "na",
-        chunk_size: int = 4096,
-    ):
-        """
-        Generate speech with streaming output.
-        Yields audio chunks as they're generated.
-        """
+    def generate_streaming(self, text: str, voice: str = "F1", speed: float = 1.0,
+                           quality_steps: int = 8, language: str = "na", chunk_size: int = 4096):
         text_chunks = self.text_processor.chunk_text(text)
         for i, chunk in enumerate(text_chunks):
             audio, _ = self.generate(chunk, voice, speed, quality_steps, language)
@@ -339,7 +301,6 @@ class SupertonicTTS:
                 yield audio[start:start + chunk_size]
 
     def get_model_info(self) -> Dict[str, Any]:
-        """Get information about the loaded model and system."""
         info = {
             "model_loaded": self.model_loaded,
             "providers": self.providers,

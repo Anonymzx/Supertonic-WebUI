@@ -184,6 +184,35 @@ For optimal performance with AMD Radeon RX 7800 XT:
 
 The application automatically falls back to CPU if DirectML is unavailable. No configuration changes needed.
 
+---
+
+### Windows CMD Unicode Fix
+
+The backend automatically sets UTF-8 encoding on Windows startup:
+```python
+os.system("chcp 65001 > nul")
+```
+This prevents crashes from Unicode characters in Windows Command Prompt. All log messages use ASCII-safe `[OK]`, `[WARNING]`, `[FAIL]` prefixes instead of Unicode symbols.
+
+---
+
+### Diagnostics Endpoint
+
+Once the backend is running, visit:
+```
+GET http://localhost:8000/api/debug/providers
+```
+
+This returns detailed diagnostics including:
+- Python executable path and version
+- Active virtual environment path
+- ONNX Runtime version and available providers
+- Whether DirectML (AMD GPU) is detected
+- Whether supertonic SDK is installed
+- Detailed DirectML provider info
+
+Use this to verify your installation is correct.
+
 ## 📁 Project Structure
 
 ```

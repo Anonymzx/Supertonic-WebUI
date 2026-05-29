@@ -24,22 +24,22 @@ def detect_execution_providers() -> List[str]:
         # DirectML for AMD GPUs (priority)
         if "DmlExecutionProvider" in available:
             providers.append("DmlExecutionProvider")
-            logger.info("✓ DirectML provider available (AMD GPU)")
+            logger.info("[OK] DirectML provider available (AMD GPU)")
         # CUDA for NVIDIA GPUs
         if "CUDAExecutionProvider" in available:
             providers.append("CUDAExecutionProvider")
-            logger.info("✓ CUDA provider available (NVIDIA GPU)")
+            logger.info("[OK] CUDA provider available (NVIDIA GPU)")
         # CPU fallback (always last)
         providers.append("CPUExecutionProvider")
-        logger.info("✓ CPU provider available")
+        logger.info("[OK] CPU provider available")
 
         return providers
 
     except ImportError:
-        logger.error("onnxruntime not installed")
+        logger.error("[FAIL] onnxruntime not installed")
         return ["CPUExecutionProvider"]
     except Exception as e:
-        logger.error(f"Error detecting providers: {e}")
+        logger.error(f"[FAIL] Error detecting providers: {e}")
         return ["CPUExecutionProvider"]
 
 
@@ -77,7 +77,7 @@ def get_provider_info() -> Dict[str, Any]:
             info["gpu_name"] = "CPU (no GPU detected)"
 
     except Exception as e:
-        logger.error(f"Error getting provider info: {e}")
+        logger.error(f"[FAIL] Error getting provider info: {e}")
 
     return info
 
@@ -95,5 +95,5 @@ def create_session_options():
         opts.inter_op_num_threads = 2
         return opts
     except Exception as e:
-        logger.error(f"Error creating session options: {e}")
+        logger.error(f"[FAIL] Error creating session options: {e}")
         return None

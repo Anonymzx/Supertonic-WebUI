@@ -5,17 +5,22 @@ REST API for text-to-speech generation using official Supertonic 3 SDK.
 import io
 import json
 import time
+import sys
 import logging
 from typing import Optional
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+# Fix Windows console UTF-8 compatibility (prevents Unicode crashes in CMD)
+if sys.platform == "win32":
+    import os
+    os.system("chcp 65001 > nul 2>&1")
 
 import numpy as np
 import soundfile as sf
 from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse, Response
-from fastapi.staticfiles import StaticFiles
 
 from config import (
     HOST, PORT, BACKEND_URL, FRONTEND_URL,
@@ -48,18 +53,49 @@ async def lifespan(app: FastAPI):
     logger.info(f"GPU available: {tts_engine.provider_info.get('gpu_available', False)}")
     logger.info(f"GPU name: {tts_engine.provider_info.get('gpu_name', 'N/A')}")
 
+    # Log diagnostics
+    logger.info(f"Python executable: {sys.executable}")
+    logger.info(f"Python version: {sys.version}")
+
+    # Try to detect venv
+    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        logger.info(f"Active virtual env: {sys.prefix}")
+    else:
+        logger.info("No virtual environment detected (running global Python)")
+
+    # Try to import and show Supertonic SDK status
+    try:
+        import supertonic
+        logger.info("[OK] supertonic SDK is available")
+    except ImportError:
+        logger.warning("[WARNING] supertonic SDK is NOT installed. Run: pip install supertonic")
+
+    # Try to check ONNX Runtime and DirectML
+    try:
+        import onnxruntime as ort
+        logger.info(f"[OK] onnxruntime version: {ort.__version__}")
+        available_providers = ort.get_available_providers()
+        logger.info(f"[OK] Available providers: {available_providers}")
+        if "DmlExecutionProvider" in available_providers:
+            logger.info("[OK] DirectML is ACTIVE - AMD GPU acceleration enabled")
+        else:
+            logger.warning("[WARNING] DirectML not available. Running on CPU only.")
+            logger.warning("[WARNING] For AMD GPU: pip install onnxruntime-directml")
+    except ImportError:
+        logger.warning("[WARNING] onnxruntime not installed")
+
     # Try to load model automatically using official SDK (auto_download=True)
     logger.info("Attempting to load Supertonic 3 model (official SDK with auto-download)...")
     try:
         model_loaded = tts_engine.load_model()
         if model_loaded:
-            logger.info("✓ Model loaded successfully via official SDK")
+            logger.info("[OK] Model loaded successfully via official SDK")
         else:
             err = tts_engine._load_error or "Unknown error"
-            logger.warning(f"⚠ Model could not be loaded: {err}")
-            logger.warning("  The SDK will auto-download on first successful load.")
+            logger.warning(f"[WARNING] Model could not be loaded: {err}")
+            logger.warning("[WARNING] The SDK will auto-download on first successful load.")
     except Exception as e:
-        logger.error(f"⚠ Unexpected error during model loading: {e}")
+        logger.error(f"[FAIL] Unexpected error during model loading: {e}")
 
     # Show available endpoints
     logger.info(f"API: http://{HOST}:{PORT}/api")
@@ -174,7 +210,7 @@ async def text_to_speech(request: TTSRequest):
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
-        logger.error(f"TTS generation failed: {e}", exc_info=True)
+        logger.error(f"[FAIL] TTS generation failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 
@@ -226,7 +262,7 @@ async def text_to_speech_stream(request: TTSRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Streaming TTS failed: {e}", exc_info=True)
+        logger.error(f"[FAIL] Streaming TTS failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -290,7 +326,7 @@ async def batch_text_to_speech(request: BatchTTSRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Batch TTS failed: {e}", exc_info=True)
+        logger.error(f"[FAIL] Batch TTS failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -381,6 +417,58 @@ async def get_system_info():
         "audio_cache_size": tts_engine.cache.count,
         "queue_size": generation_queue.pending_count,
     }
+
+
+@app.get("/api/debug/providers")
+async def debug_providers():
+    """
+    Debug endpoint to diagnose provider/installation issues.
+    Returns detailed info about the Python environment and ONNX setup.
+    """
+    import sys as sys_module
+
+    info = {
+        "python_executable": sys_module.executable,
+        "python_version": sys_module.version,
+        "active_venv": sys_module.prefix if hasattr(sys_module, 'prefix') else "unknown",
+        "onnxruntime_version": "",
+        "available_providers": [],
+        "gpu_detected": False,
+        "supertonic_installed": False,
+        "supertonic_error": "",
+        "provider_details": {},
+    }
+
+    # Check ONNX Runtime
+    try:
+        import onnxruntime as ort
+        info["onnxruntime_version"] = ort.__version__
+        info["available_providers"] = ort.get_available_providers()
+        info["gpu_detected"] = any(
+            p in info["available_providers"]
+            for p in ["DmlExecutionProvider", "CUDAExecutionProvider", "TensorrtExecutionProvider"]
+        )
+    except Exception as e:
+        info["onnxruntime_version"] = f"NOT INSTALLED: {e}"
+
+    # Check Supertonic
+    try:
+        import supertonic
+        info["supertonic_installed"] = True
+        info["supertonic_version"] = getattr(supertonic, "__version__", "unknown")
+    except ImportError as e:
+        info["supertonic_installed"] = False
+        info["supertonic_error"] = str(e)
+
+    # Check DirectML specifically
+    try:
+        import onnxruntime as ort
+        dml_providers = [p for p in ort.get_available_providers() if "Dml" in p]
+        info["provider_details"]["dml_providers"] = dml_providers
+    except Exception:
+        info["provider_details"]["dml_providers"] = []
+
+    return info
 
 
 @app.get("/api/system/providers")
@@ -488,7 +576,7 @@ async def save_start_time():
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
-    """Handle HTTP exceptions with consistent format - returns JSON the frontend can display."""
+    """Handle HTTP exceptions with consistent format."""
     logger.error(f"HTTP {exc.status_code}: {exc.detail}")
     return Response(
         content=json.dumps({
@@ -503,7 +591,7 @@ async def http_exception_handler(request, exc):
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
     """Handle unhandled exceptions."""
-    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    logger.error(f"[FAIL] Unhandled exception: {exc}", exc_info=True)
     return Response(
         content=json.dumps({
             "error": "Internal server error",

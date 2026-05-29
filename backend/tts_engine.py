@@ -102,7 +102,6 @@ class AudioCache:
         cache_key = self._get_cache_key(text, voice, speed, quality_steps, language)
         cache_file = self.cache_dir / f"{cache_key}{AUDIO_EXTENSION}"
         sf.write(str(cache_file), audio_data, sample_rate)
-        logger.info(f"Cached: {cache_key}")
         return cache_file
 
     def clear_expired(self) -> int:
@@ -131,8 +130,8 @@ class SupertonicTTS:
     """
 
     def __init__(self):
-        self.tts = None  # supertonic.TTS instance
-        self.voice_styles: dict = {}  # Cached voice styles
+        self.tts = None
+        self.voice_styles: dict = {}
         self.providers = ["CPUExecutionProvider"]
         self.provider_info = {}
         self.model_loaded = False
@@ -169,7 +168,6 @@ class SupertonicTTS:
             from supertonic import TTS
 
             # Initialize TTS with auto-download enabled
-            # This uses HuggingFace's built-in caching system
             if "DmlExecutionProvider" in self.providers:
                 logger.info("Using DirectML execution provider for AMD GPU")
                 self.tts = TTS(
@@ -195,7 +193,7 @@ class SupertonicTTS:
 
             self.model_loaded = True
             self._load_error = None
-            logger.info("✓ Supertonic 3 model loaded successfully!")
+            logger.info("[OK] Supertonic 3 model loaded successfully!")
             return True
 
         except ImportError:
@@ -208,7 +206,7 @@ class SupertonicTTS:
 
         except Exception as e:
             self._load_error = str(e)
-            logger.error(f"Failed to load model via SDK: {e}", exc_info=True)
+            logger.error(f"[FAIL] Failed to load model via SDK: {e}", exc_info=True)
             return False
 
     def get_voice_style(self, voice: str):
@@ -221,7 +219,7 @@ class SupertonicTTS:
                 self.voice_styles[voice] = style
                 return style
             except Exception as e:
-                logger.error(f"Failed to get voice style {voice}: {e}")
+                logger.error(f"[FAIL] Failed to get voice style {voice}: {e}")
                 raise
         raise RuntimeError("Model not loaded")
 
@@ -318,7 +316,7 @@ class SupertonicTTS:
             return audio, metadata
 
         except Exception as e:
-            logger.error(f"TTS synthesis failed: {e}", exc_info=True)
+            logger.error(f"[FAIL] TTS synthesis failed: {e}", exc_info=True)
             raise RuntimeError(f"TTS synthesis error: {e}")
 
     def generate_streaming(

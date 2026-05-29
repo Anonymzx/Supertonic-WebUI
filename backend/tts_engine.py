@@ -355,4 +355,3 @@ class SupertonicTTS:
 
 # Global TTS engine instance
 tts_engine = SupertonicTTS()
-</write_to_file>

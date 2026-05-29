@@ -97,4 +97,3 @@ def create_session_options():
     except Exception as e:
         logger.error(f"Error creating session options: {e}")
         return None
-</write_to_file>

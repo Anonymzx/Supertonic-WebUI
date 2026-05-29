@@ -131,4 +131,3 @@ class VoiceManager:
 
 # Global voice manager instance
 voice_manager = VoiceManager()
-</write_to_file>

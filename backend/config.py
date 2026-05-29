@@ -79,4 +79,3 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger("supertonic-tts")
-</write_to_file>

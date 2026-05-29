@@ -204,4 +204,3 @@ class HistoryManager:
 
 # Global history manager instance
 history_manager = HistoryManager()
-</write_to_file>

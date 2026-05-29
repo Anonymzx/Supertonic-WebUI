@@ -247,4 +247,3 @@ class GenerationQueue:
 
 # Global queue instance
 generation_queue = GenerationQueue()
-</write_to_file>

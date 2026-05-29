@@ -136,4 +136,3 @@ class ErrorResponse(BaseModel):
     error: str
     detail: Optional[str] = None
     code: str = "UNKNOWN_ERROR"
-</write_to_file>

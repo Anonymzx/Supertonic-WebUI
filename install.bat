@@ -32,8 +32,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VER=%%i
-echo  Python %PYTHON_VER% found!
+echo  Python found!
 echo.
 
 rem -------------------------------------------------------
@@ -53,8 +52,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-for /f "tokens=1" %%i in ('node --version') do set NODE_VER=%%i
-echo  Node.js %NODE_VER% found!
+echo  Node.js found!
 echo.
 
 rem -------------------------------------------------------
@@ -72,8 +70,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-for /f "delims=" %%i in ('npm --version') do set NPM_VER=%%i
-echo  npm %NPM_VER% found!
+echo  npm found!
 echo.
 
 rem -------------------------------------------------------

@@ -46,10 +46,10 @@ See how Supertonic-3 handles different languages and emotions using expression t
 
 | Language | Context / Style | Input Text with Tags | Sample Output |
 |----------|-----------------|----------------------|---------------|
-| 🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | [▶️ Play](https://github.com/user-attachments/files/28419480/1.wav) |
+| 🇮🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | [▶️ Play](https://github.com/user-attachments/files/28419480/1.wav) |
 | 🇮🇩 **Indonesian** | Emotional / Sighing | `<sigh> Aku sudah bilang berkali-kali, jangan lupa kunci pintunya.` | [▶️ Play](https://github.com/user-attachments/files/28419485/2.wav) |
 | 🇮🇩 **Indonesian** | Casual / Laughing | `Wah <laugh> kamu bisa juga! <breath> Aku nggak nyangka lho.` | [▶️ Play](https://github.com/user-attachments/files/28419491/3.wav) |
-| 🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | [▶️ Play](https://github.com/user-attachments/files/28419504/4.wav) |
+| 🇮🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | [▶️ Play](https://github.com/user-attachments/files/28419504/4.wav) |
 | 🇺🇸 **English** | Casual / Laughing | `I can't believe you did that <laugh> it's so funny!` | [▶️ Play](https://github.com/user-attachments/files/28419511/5.wav) |
 | 🇯🇵 **Japanese** | Polite / Hesitant | `Ano... <uh> chotto matte kudasai [pause] arigato gozaimasu.` | [▶️ Play](https://github.com/user-attachments/files/28419515/6.wav) |
 | 🇪🇸 **Spanish** | Narrative / Breathing | `Hola <breath> bienvenidos a nuestro canal de YouTube.` | [▶️ Play](https://github.com/user-attachments/files/28419523/7.wav) |

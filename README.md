@@ -16,8 +16,9 @@
 ## 🖼️ UI Preview
 
 <p align="center">
-  <img src="https://i.imgur.com/8QZJz9L.png" alt="Supertonic-3 WebUI Interface" width="800"/>
-  <!-- Note: Replace the URL above with your actual hosted image URL if you upload it to GitHub/Imgur -->
+  <img width="1191" height="1035" alt="Screenshot 2026-05-30 163742" src="https://github.com/user-attachments/assets/c366cc55-025a-4659-b607-2115b3076bd2" />
+
+
 </p>
 
 **Interface Overview:**
@@ -46,13 +47,13 @@ See how Supertonic-3 handles different languages and emotions using expression t
 
 | Language | Context / Style | Input Text with Tags | Expected Result |
 |----------|-----------------|----------------------|-----------------|
-| 🇮🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | Natural pause after greeting, clear articulation of university name. |
-| 🇩 **Indonesian** | Emotional / Sighing | `<sigh> Aku sudah bilang berkali-kali, jangan lupa kunci pintunya.` | Expressive sigh at the beginning, conveying frustration. |
-| 🇮🇩 **Indonesian** | Casual / Laughing | `Wah <laugh> kamu bisa juga! <breath> Aku nggak nyangka lho.` | Natural laughter and breath, sounding friendly and surprised. |
-| 🇮🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | Professional pause between phrases, suitable for formal openings. |
-| 🇸 **English** | Casual / Laughing | `I can't believe you did that <laugh> it's so funny!` | Natural laughter embedded in speech. |
-| 🇯🇵 **Japanese** | Polite / Hesitant | `Ano... <uh> chotto matte kudasai [pause] arigato gozaimasu.` | Realistic hesitation ("uh") and pause. |
-| 🇪🇸 **Spanish** | Narrative / Breathing | `Hola <breath> bienvenidos a nuestro canal de YouTube.` | Natural breath intake between phrases. |
+| 🇮🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | [1.wav](https://github.com/user-attachments/files/28419480/1.wav) |
+| 🇩 **Indonesian** | Emotional / Sighing | `<sigh> Aku sudah bilang berkali-kali, jangan lupa kunci pintunya.` | [2.wav](https://github.com/user-attachments/files/28419485/2.wav) |
+| 🇮🇩 **Indonesian** | Casual / Laughing | `Wah <laugh> kamu bisa juga! <breath> Aku nggak nyangka lho.` | [3.wav](https://github.com/user-attachments/files/28419491/3.wav) |
+| 🇮🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | [4.wav](https://github.com/user-attachments/files/28419504/4.wav) |
+| 🇸 **English** | Casual / Laughing | `I can't believe you did that <laugh> it's so funny!` | [5.wav](https://github.com/user-attachments/files/28419511/5.wav) |
+| 🇯🇵 **Japanese** | Polite / Hesitant | `Ano... <uh> chotto matte kudasai [pause] arigato gozaimasu.` | [6.wav](https://github.com/user-attachments/files/28419515/6.wav) |
+| 🇪🇸 **Spanish** | Narrative / Breathing | `Hola <breath> bienvenidos a nuestro canal de YouTube.` | [7.wav](https://github.com/user-attachments/files/28419523/7.wav) |
 
 > 💡 **Tip**: For best results, always add `[pause]` or `<breath>` between long sentences to prevent the AI from rushing.
 

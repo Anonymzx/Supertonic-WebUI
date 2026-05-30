@@ -207,7 +207,7 @@ Found a bug? Have a feature idea? Want to add support for more languages?
 ---
 
 <p align="center">
-💖 [Buy me Coffee!](https://ko-fi.com/anonymzx). 
+💖 <a href="https://ko-fi.com/anonymzx">Buy me Coffee!</a>
 </p>
 
 <p align="center">

@@ -1,0 +1,14 @@
+{
+    "provider": "CPU",
+    "language": "id",
+    "voice_style": "M1",
+    "speed": 1,
+    "quality": 12,
+    "trim_silence": true,
+    "normalize_vol": false,
+    "clarity_boost": false,
+    "pitch": 0,
+    "time_stretch": 1,
+    "chorus": false,
+    "text": ""
+}

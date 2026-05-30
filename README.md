@@ -17,18 +17,13 @@
 
 <p align="center">
   <img src="https://i.imgur.com/8QZJz9L.png" alt="Supertonic-3 WebUI Interface" width="800"/>
-  <!-- Note: Replace the URL above with your actual hosted image URL -->
+  <!-- Note: Replace the URL above with your actual hosted image URL if you upload it to GitHub/Imgur -->
 </p>
 
 **Interface Overview:**
 - **Native AI Generation**: Large text input area with quick-access expression tag buttons (10 official emotions).
 - **Advanced Audio Post-Processing**: Built-in Librosa pipeline for pitch shifting, auto-trimming, volume normalization, and special effects.
 - **Hardware Selection**: Seamlessly switch between CUDA, DirectML, ROCm, and CPU on the fly.
-
-**🇮🇩 Dukungan Bahasa Indonesia:**
-- ✅ Deteksi otomatis bahasa Indonesia (Auto-Detect)
-- ✅ Tag ekspresi yang natural untuk bahasa Indonesia (`<sigh>`, `<laugh>`, `<surprise>`, dll)
-- ✅ Kualitas intonasi yang pas untuk narasi panjang (seperti Voiceover YouTube / Gaming)
 
 ---
 
@@ -40,12 +35,30 @@
 | 🎭 **10 Official Expression Tags** | Add `<breath>`, `<laugh>`, `<scream>`, `<angry>`, etc., for human-like prosody. |
 | 🎛️ **Audio Post-Processing** | Built-in pitch shifting, silence trimming, clarity boost, and chorus effects via Librosa. |
 | ⚡ **Hardware Agnostic** | Run on CPU, NVIDIA CUDA, AMD DirectML/ROCm — switch anytime. |
-| 🎨 **Custom Voice Support** | Import your own voice embeddings from Supertonic Voice Builder. |
+|  **Custom Voice Support** | Import your own voice embeddings from Supertonic Voice Builder. |
 | 🔒 **100% Local & Private** | No cloud, no API keys, no data leaves your machine. |
 
 ---
 
-## 🔊 Usage Examples & Tags Reference
+## 🔊 Audio Samples & Usage Examples
+
+See how Supertonic-3 handles different languages and emotions using expression tags. You can copy these examples directly into the WebUI to test them.
+
+| Language | Context / Style | Input Text with Tags | Expected Result |
+|----------|-----------------|----------------------|-----------------|
+| 🇮🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | Natural pause after greeting, clear articulation of university name. |
+| 🇩 **Indonesian** | Emotional / Sighing | `<sigh> Aku sudah bilang berkali-kali, jangan lupa kunci pintunya.` | Expressive sigh at the beginning, conveying frustration. |
+| 🇮🇩 **Indonesian** | Casual / Laughing | `Wah <laugh> kamu bisa juga! <breath> Aku nggak nyangka lho.` | Natural laughter and breath, sounding friendly and surprised. |
+| 🇮🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | Professional pause between phrases, suitable for formal openings. |
+| 🇸 **English** | Casual / Laughing | `I can't believe you did that <laugh> it's so funny!` | Natural laughter embedded in speech. |
+| 🇯🇵 **Japanese** | Polite / Hesitant | `Ano... <uh> chotto matte kudasai [pause] arigato gozaimasu.` | Realistic hesitation ("uh") and pause. |
+| 🇪🇸 **Spanish** | Narrative / Breathing | `Hola <breath> bienvenidos a nuestro canal de YouTube.` | Natural breath intake between phrases. |
+
+> 💡 **Tip**: For best results, always add `[pause]` or `<breath>` between long sentences to prevent the AI from rushing.
+
+---
+
+## 🎭 Expression Tags Reference
 
 Supertonic-3 natively supports **10 specific emotion tags**. Use them to inject emotion directly into your text.
 
@@ -111,6 +124,8 @@ python main.py
 | **Storage** | 500 MB | 1 GB+ (for model cache) |
 | **OS** | Windows 10 / Linux / macOS | Latest stable release |
 
+> 💡 **Tip**: GPU acceleration (CUDA/DirectML/ROCm) significantly reduces inference time. CPU mode works great for testing and light usage.
+
 ---
 
 ## 🎛️ Audio Post-Processing Guide
@@ -125,7 +140,7 @@ This WebUI includes a built-in Librosa pipeline that processes the audio **after
 | 🎵 **Pitch Shift** | Adjust pitch in semitones (-12 to +12) | Character voices, deep narration |
 | 🤖 **Chorus Effect** | Layers detuned copy for robotic texture | Horror content, creative effects |
 
-> ⚙️ All post-processing is optional and can be toggled per generation.
+> ️ All post-processing is optional and can be toggled per generation.
 
 ---
 
@@ -142,20 +157,20 @@ Bring your own voice:
 
 ---
 
-## 🛠️ Troubleshooting
+## ️ Troubleshooting
 
 | Issue | Likely Cause | Solution |
 |-------|--------------|----------|
 | ❌ Model won't download | No internet / firewall | Ensure connection on first run; model caches locally after |
 | ⚠️ GPU not detected | Wrong ONNX package | Reinstall with correct runtime: `onnxruntime-gpu` / `directml` / `rocm` |
 | 🪟 App closes instantly | Launched via double-click | Always use `run.bat` or run `python main.py` from terminal to see errors |
-| 🐌 Slow inference | CPU mode / low steps | Switch to GPU backend or increase *Quality* steps (max 12) |
+|  Slow inference | CPU mode / low steps | Switch to GPU backend or increase *Quality* steps (max 12) |
 | 🔊 Audio sounds robotic | Missing expression tags | Use `<breath>`, `<laugh>`, etc., to add natural rhythm |
 | 🎚️ Post-processing not applied | Librosa not installed | Run `pip install librosa` in your virtual environment |
 
 ---
 
-## 🔗 Resources & Credits
+##  Resources & Credits
 
 - **📦 Model**: [Supertonic-3 on Hugging Face](https://huggingface.co) *(OpenRAIL-M License)*
 - **🧠 Core Engine**: Official `supertonic` Python package
@@ -180,11 +195,11 @@ Found a bug? Have a feature idea? Want to add support for more languages?
 4. ⭐ Star the repo if you find it useful!
 
 **Ways to Contribute:**
-- 🌐 Add translation support for new languages
-- 🎨 Improve UI/UX with Gradio components
+-  Add translation support for new languages
+-  Improve UI/UX with Gradio components
 - 🎛️ Extend audio post-processing features
 - 📝 Write tutorials or usage guides
-- 🧪 Test on different hardware configurations
+-  Test on different hardware configurations
 
 > 🙏 Special thanks to the Supertonic team, ONNX community, Librosa developers, and Gradio contributors for making local AI accessible to everyone.
 

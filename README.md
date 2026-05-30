@@ -1,7 +1,7 @@
 # 🎙️ Supertonic-3 TTS WebUI
 
-> **Local, Offline, Expressive Text-to-Speech**  
-> A powerful Gradio-based WebUI for the **Supertonic-3** TTS model (~99M parameters). Generate natural-sounding speech in 31+ languages with emotion tags, advanced audio post-processing, voice customization, and hardware-accelerated inference — **100% offline**.
+ **Local, Offline, Expressive Text-to-Speech**  
+ A powerful Gradio-based WebUI for the **Supertonic-3** TTS model (~99M parameters). Generate natural-sounding speech in 31+ languages with emotion tags, advanced audio post-processing, voice customization, and hardware-accelerated inference — **100% offline**.
 
 <p align="center">
   <img src="https://img.shields.io/badge/Language-31%2B-brightgreen" alt="Languages">

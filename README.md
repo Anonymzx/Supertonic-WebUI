@@ -109,7 +109,7 @@ pip install -r requirements.txt
 # CPU / Apple Silicon      → pip install onnxruntime
 
 # Launch
-python main.py
+python app.py
 ```
 
 ---

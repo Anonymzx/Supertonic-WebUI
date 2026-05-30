@@ -418,7 +418,7 @@ def build_app():
                             with gr.Row():
                                 with gr.Column():
                                     trim_silence_cb = gr.Checkbox(label="✂️ Auto-Trim Silence", value=True)
-                                    normalize_vol_cb = gr.Checkbox(label="🔊 Normalize Volume", value=True)
+                                    normalize_vol_cb = gr.Checkbox(label="🔊 Normalize Volume", value=False)
                                     clarity_boost_cb = gr.Checkbox(label="🎙️ Clarity Boost (Pre-emphasis)", value=False)
                                     chorus_cb = gr.Checkbox(label="🤖 Sci-Fi / Chorus Effect", value=False)
                                 

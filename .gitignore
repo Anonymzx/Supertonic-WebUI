@@ -15,7 +15,6 @@ dist/
 *.egg
 
 # Generated Audio Files (Mencegah file hasil generate ikut ter-commit)
-*.wav
 *.mp3
 *.flac
 outputs/

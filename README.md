@@ -1,6 +1,7 @@
-# 🎙️ Supertonic-3 TTS WebUI
+# ️  🎙️Supertonic-3 TTS WebUI
 
- **Local, Offline, Expressive Text-to-Speech**  
+**Local, Offline, Expressive Text-to-Speech**  
+
  A powerful Gradio-based WebUI for the **Supertonic-3** TTS model (~99M parameters). Generate natural-sounding speech in 31+ languages with emotion tags, advanced audio post-processing, voice customization, and hardware-accelerated inference — **100% offline**.
 
 <p align="center">
@@ -16,9 +17,7 @@
 ## 🖼️ UI Preview
 
 <p align="center">
-  <img width="1191" height="1035" alt="Screenshot 2026-05-30 163742" src="https://github.com/user-attachments/assets/c366cc55-025a-4659-b607-2115b3076bd2" />
-
-
+  <img width="1191" height="1035" alt="Supertonic-3 WebUI Interface" src="https://github.com/user-attachments/assets/c366cc55-025a-4659-b607-2115b3076bd2" />
 </p>
 
 **Interface Overview:**
@@ -32,28 +31,28 @@
 
 | Feature | Benefit |
 |---------|---------|
-| 🌍 **31+ Languages + Auto-Detect** | Speak globally — or let the model detect language automatically. |
+|  **31+ Languages + Auto-Detect** | Speak globally — or let the model detect language automatically. |
 | 🎭 **10 Official Expression Tags** | Add `<breath>`, `<laugh>`, `<scream>`, `<angry>`, etc., for human-like prosody. |
-| 🎛️ **Audio Post-Processing** | Built-in pitch shifting, silence trimming, clarity boost, and chorus effects via Librosa. |
+| ️ **Audio Post-Processing** | Built-in pitch shifting, silence trimming, clarity boost, and chorus effects via Librosa. |
 | ⚡ **Hardware Agnostic** | Run on CPU, NVIDIA CUDA, AMD DirectML/ROCm — switch anytime. |
-|  **Custom Voice Support** | Import your own voice embeddings from Supertonic Voice Builder. |
+| 🎨 **Custom Voice Support** | Import your own voice embeddings from Supertonic Voice Builder. |
 | 🔒 **100% Local & Private** | No cloud, no API keys, no data leaves your machine. |
 
 ---
 
-## 🔊 Audio Samples & Usage Examples
+##  Audio Samples & Usage Examples
 
 See how Supertonic-3 handles different languages and emotions using expression tags. You can copy these examples directly into the WebUI to test them.
 
-| Language | Context / Style | Input Text with Tags | Expected Result |
-|----------|-----------------|----------------------|-----------------|
-| 🇮🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | [1.wav](https://github.com/user-attachments/files/28419480/1.wav) |
-| 🇩 **Indonesian** | Emotional / Sighing | `<sigh> Aku sudah bilang berkali-kali, jangan lupa kunci pintunya.` | [2.wav](https://github.com/user-attachments/files/28419485/2.wav) |
-| 🇮🇩 **Indonesian** | Casual / Laughing | `Wah <laugh> kamu bisa juga! <breath> Aku nggak nyangka lho.` | [3.wav](https://github.com/user-attachments/files/28419491/3.wav) |
-| 🇮🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | [4.wav](https://github.com/user-attachments/files/28419504/4.wav) |
-| 🇸 **English** | Casual / Laughing | `I can't believe you did that <laugh> it's so funny!` | [5.wav](https://github.com/user-attachments/files/28419511/5.wav) |
-| 🇯🇵 **Japanese** | Polite / Hesitant | `Ano... <uh> chotto matte kudasai [pause] arigato gozaimasu.` | [6.wav](https://github.com/user-attachments/files/28419515/6.wav) |
-| 🇪🇸 **Spanish** | Narrative / Breathing | `Hola <breath> bienvenidos a nuestro canal de YouTube.` | [7.wav](https://github.com/user-attachments/files/28419523/7.wav) |
+| Language | Context / Style | Input Text with Tags | Sample Output |
+|----------|-----------------|----------------------|---------------|
+| 🇩 **Indonesian** | **Introduction (Perkenalan)** | `Halo, nama saya Thoriq. Senang bertemu denganmu! <breath> Saya kuliah di Universitas Pamulang, di jurusan Sistem Informasi.` | [▶️ Play](https://github.com/user-attachments/files/28419480/1.wav) |
+| 🇮🇩 **Indonesian** | Emotional / Sighing | `<sigh> Aku sudah bilang berkali-kali, jangan lupa kunci pintunya.` | [▶️ Play](https://github.com/user-attachments/files/28419485/2.wav) |
+| 🇮🇩 **Indonesian** | Casual / Laughing | `Wah <laugh> kamu bisa juga! <breath> Aku nggak nyangka lho.` | [▶️ Play](https://github.com/user-attachments/files/28419491/3.wav) |
+| 🇩 **Indonesian** | Formal / Pause | `Selamat datang [pause] terima kasih telah bergabung dengan kami.` | [▶️ Play](https://github.com/user-attachments/files/28419504/4.wav) |
+| 🇺🇸 **English** | Casual / Laughing | `I can't believe you did that <laugh> it's so funny!` | [▶️ Play](https://github.com/user-attachments/files/28419511/5.wav) |
+| 🇯🇵 **Japanese** | Polite / Hesitant | `Ano... <uh> chotto matte kudasai [pause] arigato gozaimasu.` | [▶️ Play](https://github.com/user-attachments/files/28419515/6.wav) |
+| 🇪🇸 **Spanish** | Narrative / Breathing | `Hola <breath> bienvenidos a nuestro canal de YouTube.` | [▶️ Play](https://github.com/user-attachments/files/28419523/7.wav) |
 
 > 💡 **Tip**: For best results, always add `[pause]` or `<breath>` between long sentences to prevent the AI from rushing.
 
@@ -136,12 +135,12 @@ This WebUI includes a built-in Librosa pipeline that processes the audio **after
 | Feature | Description | Best For |
 |---------|-------------|----------|
 | ✂️ **Auto-Trim Silence** | Removes dead air at start/end automatically | Clean cuts for Shorts/Reels |
-| 🔊 **Normalize Volume** | Boosts audio to -1dB peak safely | YouTube voiceovers, podcasts |
+|  **Normalize Volume** | Boosts audio to -1dB peak safely | YouTube voiceovers, podcasts |
 | 🎙️ **Clarity Boost** | Pre-emphasis filter for sharper consonants | Gaming commentary, tutorials |
 | 🎵 **Pitch Shift** | Adjust pitch in semitones (-12 to +12) | Character voices, deep narration |
 | 🤖 **Chorus Effect** | Layers detuned copy for robotic texture | Horror content, creative effects |
 
-> ️ All post-processing is optional and can be toggled per generation.
+> ⚙️ All post-processing is optional and can be toggled per generation.
 
 ---
 
@@ -154,18 +153,18 @@ Bring your own voice:
 3. Upload your `.json` file (must contain the `voice_embedding` array).
 4. Return to the main tab → your custom voice is now active.
 
-> ⚠️ Custom voices override the preset voice selector. Upload a new file or clear the input to switch back to presets.
+> ️ Custom voices override the preset voice selector. Upload a new file or clear the input to switch back to presets.
 
 ---
 
-## ️ Troubleshooting
+## 🛠️ Troubleshooting
 
 | Issue | Likely Cause | Solution |
 |-------|--------------|----------|
 | ❌ Model won't download | No internet / firewall | Ensure connection on first run; model caches locally after |
 | ⚠️ GPU not detected | Wrong ONNX package | Reinstall with correct runtime: `onnxruntime-gpu` / `directml` / `rocm` |
 | 🪟 App closes instantly | Launched via double-click | Always use `run.bat` or run `python main.py` from terminal to see errors |
-|  Slow inference | CPU mode / low steps | Switch to GPU backend or increase *Quality* steps (max 12) |
+| 🐌 Slow inference | CPU mode / low steps | Switch to GPU backend or increase *Quality* steps (max 12) |
 | 🔊 Audio sounds robotic | Missing expression tags | Use `<breath>`, `<laugh>`, etc., to add natural rhythm |
 | 🎚️ Post-processing not applied | Librosa not installed | Run `pip install librosa` in your virtual environment |
 
@@ -175,7 +174,7 @@ Bring your own voice:
 
 - **📦 Model**: [Supertonic-3 on Hugging Face](https://huggingface.co) *(OpenRAIL-M License)*
 - **🧠 Core Engine**: Official `supertonic` Python package
-- **🎨 UI Framework**: [Gradio](https://www.gradio.app/)
+- ** UI Framework**: [Gradio](https://www.gradio.app/)
 - **🔧 Audio Processing**: [Librosa](https://librosa.org/)
 - **⚙️ ONNX Runtime**: [Microsoft ONNX](https://onnxruntime.ai/)
 
@@ -186,6 +185,18 @@ The Supertonic-3 model and its license terms are maintained by the original auth
 
 ---
 
+## ☕ Support the Project
+
+If you find this tool useful, consider supporting the development!
+
+<p align="center">
+  <a href="https://ko-fi.com/anonymzx" target="_blank">
+    <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" alt="Buy Me a Coffee" height="40">
+  </a>
+</p>
+
+---
+
 ## 🤝 Contributing & Support
 
 Found a bug? Have a feature idea? Want to add support for more languages?
@@ -193,22 +204,18 @@ Found a bug? Have a feature idea? Want to add support for more languages?
 1. 🐛 [Open an Issue](https://github.com/Anonymzx/Supertonic-WebUI/issues) — Describe the problem clearly
 2. 🔀 Submit a Pull Request — Include a description of your changes
 3. 💬 Join discussions in the repo's *Discussions* tab
-4. ⭐ Star the repo if you find it useful!
+4.  Star the repo if you find it useful!
 
 **Ways to Contribute:**
--  Add translation support for new languages
--  Improve UI/UX with Gradio components
+- 🌐 Add translation support for new languages
+- 🎨 Improve UI/UX with Gradio components
 - 🎛️ Extend audio post-processing features
 - 📝 Write tutorials or usage guides
--  Test on different hardware configurations
+- 🧪 Test on different hardware configurations
 
 > 🙏 Special thanks to the Supertonic team, ONNX community, Librosa developers, and Gradio contributors for making local AI accessible to everyone.
 
 ---
-
-<p align="center">
-☕ <a href="https://ko-fi.com/anonymzx">Buy me Coffee!</a>
-</p>
 
 <p align="center">
   <sub>Built with ❤️ by <a href="https://github.com/Anonymzx">@Anonymzx</a> • For creators, developers, and privacy-first users</sub>

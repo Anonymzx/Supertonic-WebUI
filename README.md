@@ -144,16 +144,18 @@ This WebUI includes a built-in Librosa pipeline that processes the audio **after
 
 ---
 
-## 🎨 Custom Voice Integration
+## 🎨 Custom Voice Integration (Experimental)
 
-Bring your own voice:
+> ⚠️ **Note**: This feature is currently **untested/experimental**. The developer has not yet verified the output quality of custom voice embeddings. Results may vary, and the voice might sound distorted or fail to load depending on the embedding format. Use at your own risk and please report any issues!
+
+If you want to try importing your own voice:
 
 1. Generate a voice embedding via **Supertonic Voice Builder** → export as `.json`.
 2. In the WebUI, go to the *"🎨 Custom Voice"* tab.
 3. Upload your `.json` file (must contain the `voice_embedding` array).
-4. Return to the main tab → your custom voice is now active.
+4. Return to the main tab → the engine will attempt to use your custom voice.
 
-> ️ Custom voices override the preset voice selector. Upload a new file or clear the input to switch back to presets.
+> 💡 **Feedback Wanted**: If you successfully generate good audio with a custom voice, please share your results in the [Issues](https://github.com/Anonymzx/Supertonic-WebUI/issues) or [Discussions](https://github.com/Anonymzx/Supertonic-WebUI/discussions) tab to help improve this feature!
 
 ---
 

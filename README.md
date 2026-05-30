@@ -17,7 +17,7 @@
 ## 🖼️ UI Preview
 
 <p align="center">
-  <img width="1191" height="1035" alt="Supertonic-3 WebUI Interface" src="https://github.com/user-attachments/assets/c366cc55-025a-4659-b607-2115b3076bd2" />
+  <img width="1197" height="1037" alt="image" src="https://github.com/user-attachments/assets/e23a7c6b-ec1d-495f-b934-96d478ff7546" />
 </p>
 
 **Interface Overview:**

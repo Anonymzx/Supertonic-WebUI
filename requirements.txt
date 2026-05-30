@@ -1,11 +1,18 @@
-# Requirements for Supertonic-3 WebUI
+# ==========================================
+# Base Requirements for Supertonic-3 WebUI
+# ==========================================
 gradio>=4.0.0
 supertonic>=1.0.0
+librosa>=0.10.0
+numpy>=1.22.0
 
-# ONNX Runtime Installation Instructions:
-# IMPORTANT: Install the appropriate ONNX runtime based on your hardware BEFORE running app.py
+# ==========================================
+# ONNX Runtime Installation Instructions
+# ==========================================
+# IMPORTANT: The install.bat/run.bat scripts handle this automatically. 
+# If installing manually, pick ONE of the following based on your hardware BEFORE running main.py:
 #
-# For NVIDIA GPU (CUDA):
+# For NVIDIA GPU (CUDA 12.x):
 #   pip install onnxruntime-gpu
 #
 # For AMD GPU (DirectML on Windows):
@@ -15,7 +22,7 @@ supertonic>=1.0.0
 #   pip install onnxruntime-rocm
 #
 # For Apple Silicon / CPU only:
-#   pip install onnxruntime (standard package works fine)
+#   pip install onnxruntime
 #
 # If no specific runtime is installed, the default onnxruntime package will be used (CPU only).
 # The WebUI dropdown allows selecting the execution provider at runtime for flexibility.

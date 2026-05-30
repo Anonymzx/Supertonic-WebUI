@@ -45,9 +45,11 @@ if errorlevel 1 (
 )
 echo [OK] Virtual environment activated.
 
-:: Upgrade pip
+:: Upgrade pip and install dependencies
 echo.
 echo [3/4] Upgrading pip and installing dependencies...
+echo       - Installing Gradio, Supertonic...
+echo       - Installing Librosa (for Audio Post-Processing)...
 python -m pip install --upgrade pip --quiet
 pip install -r requirements.txt --quiet
 echo [OK] Base dependencies installed.

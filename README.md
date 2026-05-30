@@ -62,21 +62,21 @@ See how Supertonic-3 handles different languages and emotions using expression t
 
 Supertonic-3 natively supports **10 specific emotion tags**. Use them to inject emotion directly into your text.
 
-| Tag | Effect | Example Usage (Indonesian & English) |
-|-----|--------|---------------------------|
-| `<breath>` | Soft inhale/exhale | `Halo <breath> selamat pagi semuanya.` |
-| `<laugh>` | Light chuckle/laugh | `Wah <laugh> lucu banget itu!` |
-| `<sigh>` | Expressive sigh | `<sigh> Ya sudahlah, nggak apa-apa.` |
-| `<surprise>`| Surprised tone | `<surprise> Hah? Masa sih dia bilang begitu?` |
-| `<scream>` | Yelling/Loud tone | `<scream> Awas di depan!` |
-| `<throatclear>`| Clearing throat | `<throatclear> Mari kita mulai presentasinya.` |
-| `<sad>` | Somber/Sad tone | `<sad> Sayang sekali kita kalah hari ini.` |
-| `<angry>` | Aggressive/Angry | `<angry> Jangan sentuh barang itu!` |
-| `<cough>` | Coughing sound | `Uhuk <cough> permisi sebentar.` |
-| `<yawn>` | Yawning sound | `Hoam <yawn> saya ngantuk sekali.` |
+| Tag | Effect | Example Usage (English) |
+|-----|--------|------------------------|
+| `<breath>` | Soft inhale/exhale | `Hello <breath> good morning everyone.` |
+| `<laugh>` | Light chuckle/laugh | `Wow <laugh> that's so funny!` |
+| `<sigh>` | Expressive sigh | `<sigh> Oh well, it's okay.` |
+| `<surprise>` | Surprised tone | `<surprise> What? Did he really say that?` |
+| `<scream>` | Yelling/Loud tone | `<scream> Watch out ahead!` |
+| `<throatclear>` | Clearing throat | `<throatclear> Let's start the presentation.` |
+| `<sad>` | Somber/Sad tone | `<sad> It's such a shame we lost today.` |
+| `<angry>` | Aggressive/Angry | `<angry> Don't touch that!` |
+| `<cough>` | Coughing sound | `Excuse me <cough> just a moment.` |
+| `<yawn>` | Yawning sound | `Whoa <yawn> I'm so sleepy.` |
 
 > 💡 **Pro Tip**: Combine tags for ultra-realistic delivery:  
-> `"Wah <laugh> <breath> akhirnya berhasil juga!"`
+> `"Wow <laugh> <breath> it actually worked!"`
 
 ---
 

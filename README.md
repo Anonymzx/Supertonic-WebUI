@@ -207,7 +207,11 @@ Found a bug? Have a feature idea? Want to add support for more languages?
 ---
 
 <p align="center">
-  <sub>💖 [Buy me Coffee!](https://ko-fi.com/anonymzx) . Built with ❤️ by <a href="https://github.com/Anonymzx">@Anonymzx</a> • For creators, developers, and privacy-first users</sub>
+💖 [Buy me Coffee!](https://ko-fi.com/anonymzx). 
+</p>
+
+<p align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/Anonymzx">@Anonymzx</a> • For creators, developers, and privacy-first users</sub>
 </p>
 
 <p align="center">

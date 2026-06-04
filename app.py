@@ -354,4 +354,4 @@ if __name__ == "__main__":
     print("  Supertonic-3 TTS WebUI Pipeline")
     print("=" * 60)
     app = build_app()
-    app.launch(server_name="0.0.0.0", server_port=7860, share=False, show_error=True, inbrowser=True, css=CUSTOM_CSS, theme=gr.themes.Soft(primary_hue="blue", secondary_hue="gray"))
+    app.launch(server_name="localhost", server_port=7860, share=False, show_error=True, inbrowser=True, css=CUSTOM_CSS, theme=gr.themes.Soft(primary_hue="blue", secondary_hue="gray"))

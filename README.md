@@ -203,7 +203,7 @@ If you find this tool useful, consider supporting the development!
 
   <a href="https://ko-fi.com/anonymzx" target="_blank">
 
-    <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" alt="Buy Me a Coffee" height="40">
+  <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" alt="Buy Me a Coffee" height="40">
 
   </a>
 
